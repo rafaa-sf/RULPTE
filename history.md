@@ -2,6 +2,18 @@
 
 Newest first. One entry per version.
 
+## 1.5.2 — 2026-10-18 — Fix three labels and one omission
+
+- Figure 2's title claimed the sensors "drift steadily toward failure"; it now
+  says what the panel shows — four sensors that move with remaining life, two up
+  and two down.
+- Figure 3's title said only that the model "leans high". It now says where: too
+  high in mid-life, too low for the engines with the most life left.
+- The Sensor variability section gained the missing sentence: fifteen of the 21
+  sensors change at all, and sensor 6 is dropped with the six that never move
+  because it only toggles between 21.60 and 21.61.
+- `requirements.txt` already pinned `scikit-learn==1.9.1`; confirmed, unchanged.
+
 ## 1.5.1 — 2026-10-18 — Label the figures
 
 - A **Sensor guide** opens the notebook: all 21 sensors with symbol, what each
