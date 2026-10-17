@@ -46,11 +46,12 @@ RULPTE/
 ├── download_data.py    fetches the NASA files into data/
 ├── requirements.txt    the three Python libraries the notebook needs
 ├── LICENSE             MIT, so anyone may reuse this
+├── figures/            one plot, shown at the top of the README
 └── data/               the NASA files (downloaded, not stored in git)
     ├── train_FD001.txt   engines run to failure, so we know the answers
     ├── test_FD001.txt    engines stopped early, the quiz
     ├── RUL_FD001.txt     the correct answers for the quiz
-    └── readme.txt        NASA's own description of the files
+    └── readme.txt        NASA's own description of the files (not fetched by the script)
 ```
 
 Why the data is not in git: it is 5.5 MB of NASA's work, downloaded in one
@@ -92,6 +93,9 @@ question.
 | **Degradation by engine** | Do the surviving sensors really drift as an engine ages? Figure 1 shows four engines of different lengths, one panel per strong sensor. |
 | **Fleet trend** | Does the drift hold across all 100 engines, not just the four? Figure 2 averages the fleet as RUL counts down. |
 | **Model input** | Turns the table into the model's exam paper: one row per cycle, 14 sensors as features, RUL as the target, 20 engines held back for testing. |
+| **Baseline model** | Can a straight line through the sensors beat the dumb guess? Fits plain least squares on the 14 sensors of the 80 visible engines and scores it on the 20 hidden ones: 46.3 against 71.0. |
+| **Score on the real test set** | How does it do on the official quiz? One prediction per test engine, from its last recorded cycle: 30.2 against 51.8, with the like-for-like 27.9 against 54.1 beside it. |
+| **Where the model fails** | Which mistakes does a single number hide? Figure 3 plots guess against truth and error against truth, so the 18.8-cycle optimism is visible. |
 | **Conclusions** | What did we learn? Written by the author. |
 
 Nothing is written to disk. The notebook reads the data and draws pictures.
@@ -139,7 +143,7 @@ first dial is turned, and they stay hidden until the guesses are made. A model
 tested on the same engines it learned from is like a student sitting the exam
 they already saw — it proves nothing.
 
-**The yardstick.** "Every engine has about 71 cycles left" is the dumbest
+**The yardstick.** "Every engine has about 106 cycles left" is the dumbest
 possible guess, and it is scored the same way. Our model has to beat it to mean
 anything. On the 20 hidden engines the model scores **46.3** cycles of RMSE
 against **71.0**, so the sensors do carry real information.
@@ -156,8 +160,9 @@ last recorded cycle, and the answers are in `RUL_FD001.txt`. Score:
 **30.2** cycles, against **51.8** for the average guess.
 
 **What it gets wrong.** The model leans high: on average it says 94.3 cycles
-when the truth is 75.5, about 19 cycles too optimistic, and that lean is roughly
-the same whether the engine is fresh or dying. That is why the third figure
+when the truth is 75.5, about 19 cycles too optimistic. The lean is not flat:
+it peaks in mid-life, about +40 cycles with roughly 70 left, and shrinks to
+about +8 close to failure and +3 early in life. That is why the third figure
 shows the error, not just the score. A model you cannot see the mistakes of is
 a model you cannot improve.
 
@@ -191,5 +196,5 @@ The full walkthrough, with copy-paste commands and troubleshooting, is in
    one way to publish a fake result.
 2. **Never split by row when rows belong to the same engine.** Cycles of one
    engine are near-copies. The split is by engine, so the test is a real test.
-3. **Always beat the dumb guess.** "Every engine has about 108 cycles left" is
+3. **Always beat the dumb guess.** "Every engine has about 106 cycles left" is
    the yardstick. A model that cannot beat it is not a model, it is decoration.

@@ -67,11 +67,12 @@ scored the way the test set is scored.
 
 ## What you need
 
-- Python 3.11 or newer (developed on 3.14)
+- Python 3.12 or newer (developed on 3.14; the pinned numpy 2.5.4 needs 3.12)
 - Git, to clone the repository
 - A notebook viewer: **Jupyter Notebook**, installed in step 3. No VS Code, no
   PyCharm, no account.
-- About 15 MB of disk for the dataset, which is downloaded, not committed
+- About 6 MB of disk for the dataset once unpacked (the download itself is a
+  ~15 MB archive that is deleted afterwards), and it is not committed
 
 ## 1. Get the code
 
@@ -136,7 +137,7 @@ to download again.
 If the download is blocked (locked-down network, proxy), the script prints
 manual instructions: open the NASA Prognostics Data Repository, download the
 *Turbofan Engine Degradation Simulation Data Set* zip, unzip it, and copy
-`train_FD001.txt`, `test_FD001.txt`, `RUL_FD001.txt` and `readme.txt` into
+`train_FD001.txt`, `test_FD001.txt` and `RUL_FD001.txt` into
 `data/`.
 
 ## 5. Open the notebook and run all cells
@@ -266,7 +267,7 @@ kernel and run all cells again.
 
 **A matplotlib cache permission error** — point the cache somewhere writable
 before starting the notebook:
-`set MPLCONFIGDIR=%TEMP%\mplcache` (Windows) or
+`$env:MPLCONFIGDIR="$env:TEMP\mplcache"` (PowerShell) or
 `export MPLCONFIGDIR=/tmp/mplcache` (macOS/Linux).
 
 **`Permission denied` when writing `data/`** — the project is in a protected
