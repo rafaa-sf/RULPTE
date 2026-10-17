@@ -1,18 +1,26 @@
 # RULPTE — Remaining Useful Life Prediction for Turbofan Engines
 
 A small, readable study of how turbofan engines degrade, using NASA's C-MAPSS
-FD001 run-to-failure data. The notebook loads the raw sensor records, labels
-each one with its remaining useful life (RUL), drops the sensors that never
-move, plots the degradation signal, and fits a baseline model that predicts how
-many cycles an engine has left.
+FD001 run-to-failure data: it labels every recorded cycle with its remaining
+useful life (RUL) and fits a deliberately simple baseline that predicts how many
+cycles an engine has left.
 
-The baseline is deliberately simple — plain least squares on the 14 live
-sensors, no deep learning — so the numbers are a floor, not a ceiling:
-**RMSE 30.2 cycles** on the 100 official test engines, against 51.8 for always
-guessing the fleet average.
+> **Test RMSE 30.2 cycles** on the 100 official test engines, against 51.8 for
+> always guessing the fleet average. The caveat travels with the number: 46.3 /
+> 71.0 is the held-out figure on all cycles, and 27.9 / 54.1 once those cycles
+> are cut to the test's life range.
+
+The baseline is plain least squares on the 14 live sensors, no deep learning, so
+the numbers are a floor, not a ceiling.
 
 New to the vocabulary? **[GUIDE.md](GUIDE.md)** explains every term, every file
 and every figure in plain words, with no maths.
+
+![Predicted RUL against true RUL for the 100 test engines, and the error against true life with the ±RMSE band](figures/figure-3.png)
+
+*Figure 3 — the 100 official test engines: predictions against the truth, then
+the error against true life, with the ±RMSE band and the model's slight
+optimism.*
 
 ## Quick start (Windows, copy and paste)
 
@@ -38,10 +46,24 @@ Linux.
 - A notebook that loads the data, checks it, plots it and scores a baseline
   model, top to bottom in a few seconds.
 - Three figures: four engines followed from first flight to failure, the
-  fleet-wide trend as RUL counts down, and the model's errors on the 100
-  test engines.
+  fleet-wide trend as RUL counts down, and the test-engine errors shown at the
+  top of this page.
 - No deep learning, no web app, no dashboard, and no editor required beyond a
   browser. Just the data and what it says.
+
+## Results
+
+All figures are RMSE in cycles. Lower is better.
+
+| What is scored | Model | Always guessing the average |
+| --- | --- | --- |
+| 20 held-out engines, every cycle | 46.3 | 71.0 |
+| Same held-out engines, only cycles in the test's life range | 27.9 | 54.1 |
+| Official test: one prediction per engine at its last recorded cycle | 30.2 | 51.8 |
+
+Only the last row is the official score. The other two are the honest checks
+around it: the first includes young engines with 300 cycles left, the second is
+scored the way the test set is scored.
 
 ## What you need
 
@@ -148,7 +170,28 @@ which is the usual reason `jupyter notebook` fails on Windows.
 The notebook reads `data/`, so run step 4 first. Everything after that is
 read-only: it creates no files.
 
-### Read it like a report, not like code
+## What to expect
+
+- Train data: 20631 rows, 100 engines, 26 columns — unit, cycle, three
+  operating settings, 21 sensor channels. Test data: 13096 rows, same columns
+  for 100 engines. `RUL_FD001.txt` holds the 100 true end-of-life values.
+- Seven of the 21 sensors never move (or move in only two values), so the
+  notebook drops them and keeps 14.
+- Figure 1: four engines, 128 to 362 cycles long, rising and falling sensors.
+  Each panel shows the raw signal faintly and a 15-cycle rolling mean in bold,
+  so the trend clears the noise.
+- Figure 2: the same sensors averaged over the fleet as RUL counts down, in
+  2×2 panels. The band is the interquartile range across engines. The plot
+  stops at RUL 240 because fewer than 20 engines are still running beyond that,
+  and the panel says so.
+- The model: every cycle is one row, the 14 live sensors are the features, RUL
+  is the target, and 20 of the 100 engines are held back and never seen while
+  fitting. The three scores are in the results table above.
+- Figure 3: the model leans about 19 cycles high, and it leans high at every
+  age, worst with 40-80 cycles left.
+- Nothing is written to disk. The notebook only reads the data and draws.
+
+## Reading it without the code
 
 A notebook shows its code, but you do not have to look at it.
 
@@ -178,30 +221,6 @@ VS Code: install the *Jupyter* extension, open `rul_prediction.ipynb`, pick the
 interpreter inside `.venv`, and press *Run All*. The steps above are the same
 without any editor.
 
-## What to expect
-
-- Train data: 20631 rows, 100 engines, 26 columns — unit, cycle, three
-  operating settings, 21 sensor channels. Test data: 13096 rows, same columns
-  for 100 engines. `RUL_FD001.txt` holds the 100 true end-of-life values.
-- Seven of the 21 sensors never move (or move in only two values), so the
-  notebook drops them and keeps 14.
-- Figure 1: four engines, 128 to 362 cycles long, rising and falling sensors.
-  Each panel shows the raw signal faintly and a 15-cycle rolling mean in bold,
-  so the trend clears the noise.
-- Figure 2: the same sensors averaged over the fleet as RUL counts down, in
-  2×2 panels. The band is the interquartile range across engines. The plot
-  stops at RUL 240 because fewer than 20 engines are still running beyond that,
-  and the panel says so.
-- The model: every cycle is one row, the 14 live sensors are the features, RUL
-  is the target. 20 of the 100 engines are held back and never seen while
-  fitting, which gives **RMSE 46.3** cycles against 71.0 for the average guess. Scored
-the way the test set is scored, it is 27.9 against 54.1.
-- Figure 3: the 100 official test engines as points, predicted against true
-  with the perfect diagonal, and the error against true life with the ±RMSE
-  band drawn in. It shows the weakness as well as the score: the model leans
-  about 19 cycles high, and it leans high at every age, worst with 40-80 cycles left.
-- Nothing is written to disk. The notebook only reads the data and draws.
-
 ## Project layout
 
 ```
@@ -210,6 +229,7 @@ download_data.py  fetches the NASA archive into data/
 requirements.txt  pinned dependencies
 GUIDE.md          plain-words explanation of every term, file and figure
 LICENSE           MIT
+figures/figure-3.png  the test-engine plot shown at the top of this page
 data/             downloaded data (git ignored)
 history.md        version history, newest first
 ```
