@@ -148,7 +148,7 @@ python predict.py predict --subset FD002 --file data/test_FD002.txt
 python predict.py score --subset FD001
 ```
 
-`predict` prints one line per engine — `engine 4  RUL 92  p10 43  p90 140  PLAN`
+`predict` prints one line per engine — `engine 4  RUL 88  p10 38  p90 138  PLAN`
 — and the action comes from the pessimistic end of the interval, never the
 middle:
 
