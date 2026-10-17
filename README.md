@@ -150,6 +150,30 @@ which is the usual reason `jupyter notebook` fails on Windows.
 The notebook's first cell repeats the data-download step, in case you opened
 the notebook before running step 4.
 
+### Read it like a report, not like code
+
+A notebook shows its code, but you do not have to look at it.
+
+**Hide the code in place.** In JupyterLab open menu **View → Collapse All Code**
+(command palette: *Collapse All Code*). Every code cell folds down to its
+output, so what is left on screen is the written explanations, the printed
+numbers and the two figures. The cells still run: **Run → Run All Cells** or
+**Kernel → Restart Kernel and Run All Cells** executes everything and the
+figures reappear below the folded cells. **View → Expand All Code** brings the
+code back.
+
+**Or export a read-only page.** After running all cells once, this writes
+`rulpte.html` with the text and the figures and no code at all:
+
+```powershell
+pip install nbconvert
+python -m nbconvert --to html --no-input rulpte.ipynb
+```
+
+Open the file with a double click. It needs no server, no kernel and no
+libraries, so it is also the version to send to someone who just wants to read
+it. It is a snapshot: re-export after any change, and keep it out of git.
+
 ### Prefer an editor?
 
 VS Code: install the *Jupyter* extension, open `rulpte.ipynb`, pick the

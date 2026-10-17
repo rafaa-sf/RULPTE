@@ -10,6 +10,9 @@ graphify-out/
 # Jupyter
 .ipynb_checkpoints/
 
+# Read-only export of the notebook (see README)
+rulpte.html
+
 # Python
 __pycache__/
 *.py[cod]
