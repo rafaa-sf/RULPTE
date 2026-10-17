@@ -181,7 +181,7 @@ model, so the extra 28 numbers have to pay for themselves. The choice was not ma
 on the quiz — that would be marking your own homework. It was made on a harder
 test: cut every hidden engine at a random point in its life, exactly as the quiz
 does, and score that. There the 42 numbers win by about one cycle, **38.6 against
-39.6** on FD001 and **39.4 against 39.8** on FD002 — a small, honest gain, inside
+39.6** on FD001 and **39.4 against 39.9** on FD002 — a small, honest gain, inside
 the spread. The quiz is a single draw of engines; the random-cut test never
 touches it.
 

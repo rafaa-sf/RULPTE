@@ -109,7 +109,7 @@ scored the way the test set is scored.
 
 The features were chosen on held-out engines cut at a random cycle, which is the
 condition the test set poses, and never on the test score itself: 38.6 against
-39.6 cycles on FD001, 39.4 against 39.8 on FD002. That gain is about one cycle,
+39.6 cycles on FD001, 39.4 against 39.9 on FD002. That gain is about one cycle,
 inside the spread below, and the README says so rather than selling it.
 
 Each prediction also carries a nominal 80% interval, sized on held-out engines
