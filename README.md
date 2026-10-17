@@ -8,11 +8,8 @@ from.
 
 This is the data-and-plots milestone. A baseline RUL model comes next.
 
-> **Status: work in progress.** Two things in this README are not ready yet:
-> `requirements.txt` (step 3) and the notebook's first cell that repeats the
-> download (step 5). Both land in the next milestone. Until then, install
-> `pandas`, `numpy` and `matplotlib` by hand in step 3 and skip the
-> notebook's first cell.
+New to the vocabulary? **[GUIDE.md](GUIDE.md)** explains every term, every file
+and every figure in plain words, with no maths.
 
 ## Quick start (Windows, copy and paste)
 
@@ -21,7 +18,7 @@ git clone https://github.com/rafaa-sf/RULPTE.git
 cd RULPTE
 python -m venv .venv
 .venv\Scripts\activate
-pip install notebook pandas numpy matplotlib
+pip install -r requirements.txt notebook
 python download_data.py
 python -m notebook
 ```
@@ -92,9 +89,6 @@ numpy and matplotlib — pinned to the versions it was verified with. The second
 installs Jupyter Notebook, the browser-based viewer that runs the cells. It is
 not pinned: any current version works.
 
-> Until `requirements.txt` is added (see the status note at the top), replace
-> the first line with `pip install pandas numpy matplotlib`.
-
 ## 4. Download the data
 
 ```bash
@@ -147,8 +141,8 @@ stop the process.
 `python -m notebook` works even when the `jupyter` command is not on your PATH,
 which is the usual reason `jupyter notebook` fails on Windows.
 
-The notebook's first cell repeats the data-download step, in case you opened
-the notebook before running step 4.
+The notebook reads `data/`, so run step 4 first. Everything after that is
+read-only: it creates no files.
 
 ### Read it like a report, not like code
 
@@ -202,6 +196,8 @@ without any editor.
 rulpte.ipynb      the notebook: load, check, label, plot
 download_data.py  fetches the NASA archive into data/
 requirements.txt  pinned dependencies
+GUIDE.md          plain-words explanation of every term, file and figure
+LICENSE           MIT
 data/             downloaded data (git ignored)
 history.md        version history, newest first
 ```
