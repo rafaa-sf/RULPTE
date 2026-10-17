@@ -141,8 +141,14 @@ they already saw — it proves nothing.
 
 **The yardstick.** "Every engine has about 71 cycles left" is the dumbest
 possible guess, and it is scored the same way. Our model has to beat it to mean
-anything. On the 20 hidden engines the model scores **46.8** cycles of RMSE
+anything. On the 20 hidden engines the model scores **46.3** cycles of RMSE
 against **71.0**, so the sensors do carry real information.
+
+**A fair comparison.** Those two numbers are not the same test. The 46.3 averages
+every single cycle of the hidden engines, including young ones with 300 cycles
+left; the real quiz has one row per engine, near the end of life. Restrict the
+hidden engines to the same life range and the model scores **27.9** against
+**54.1**. Compare like with like or the second number flatters the model.
 
 **The real quiz.** The official test set is 100 different engines, each recorded
 only up to some point in its life. The model predicts once per engine, from its

@@ -194,11 +194,12 @@ without any editor.
   and the panel says so.
 - The model: every cycle is one row, the 14 live sensors are the features, RUL
   is the target. 20 of the 100 engines are held back and never seen while
-  fitting, which gives **RMSE 46.8** cycles against 71.0 for the average guess.
+  fitting, which gives **RMSE 46.3** cycles against 71.0 for the average guess. Scored
+the way the test set is scored, it is 27.9 against 54.1.
 - Figure 3: the 100 official test engines as points, predicted against true
   with the perfect diagonal, and the error against true life with the ±RMSE
   band drawn in. It shows the weakness as well as the score: the model leans
-  about 19 cycles high, and that lean is the same at every age.
+  about 19 cycles high, and it leans high at every age, worst with 40-80 cycles left.
 - Nothing is written to disk. The notebook only reads the data and draws.
 
 ## Project layout
