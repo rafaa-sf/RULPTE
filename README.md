@@ -8,11 +8,30 @@ from.
 
 This is the data-and-plots milestone. A baseline RUL model comes next.
 
-> **Status: work in progress.** The notebook is finished, but two steps below
-> are not ready yet: `requirements.txt` (step 3) and the notebook's first
-> cell that repeats the download (step 5). Both land in the next milestone.
-> Until then, install `pandas`, `numpy` and `matplotlib` by hand and skip the
+> **Status: work in progress.** Two things in this README are not ready yet:
+> `requirements.txt` (step 3) and the notebook's first cell that repeats the
+> download (step 5). Both land in the next milestone. Until then, install
+> `pandas`, `numpy` and `matplotlib` by hand in step 3 and skip the
 > notebook's first cell.
+
+## Quick start (Windows, copy and paste)
+
+```powershell
+git clone https://github.com/rafaa-sf/RULPTE.git
+cd RULPTE
+python -m venv .venv
+.venv\Scripts\activate
+pip install notebook pandas numpy matplotlib
+python download_data.py
+python -m notebook
+```
+
+Your browser opens a file list. Click **rulpte.ipynb**, then menu
+**Kernel → Restart Kernel and Run All Cells**. The two figures appear under
+their cells. `Ctrl+C` twice in the terminal stops the server.
+
+The sections below explain each step of that block, for Windows, macOS and
+Linux.
 
 ## What you get
 
@@ -20,12 +39,15 @@ This is the data-and-plots milestone. A baseline RUL model comes next.
   about two seconds (measured: 1.7 s for all seven code cells).
 - Two figures: four engines followed from first flight to failure, and the
   fleet-wide trend as RUL counts down.
-- No deep learning, no web app, no dashboard. Just the data and what it says.
+- No deep learning, no web app, no dashboard, and no editor required beyond a
+  browser. Just the data and what it says.
 
 ## What you need
 
 - Python 3.11 or newer (developed on 3.14)
 - Git, to clone the repository
+- A notebook viewer: **Jupyter Notebook**, installed in step 3. No VS Code, no
+  PyCharm, no account.
 - About 15 MB of disk for the dataset, which is downloaded, not committed
 
 ## 1. Get the code
@@ -39,7 +61,7 @@ cd RULPTE
 
 Windows (PowerShell or cmd):
 
-```bash
+```powershell
 python -m venv .venv
 .venv\Scripts\activate
 ```
@@ -52,16 +74,26 @@ source .venv/bin/activate
 ```
 
 Your prompt should now start with `(.venv)`. Every command below runs inside
-that environment.
+that environment — including the notebook, which is why the figures and the
+data libraries are guaranteed to be the same install.
 
-## 3. Install the requirements
+If `python` is not recognised on Windows, use `py -3` instead of `python` in
+both lines.
 
-```bash
+## 3. Install what the notebook needs
+
+```powershell
 pip install -r requirements.txt
+pip install notebook
 ```
 
-Three libraries: pandas, numpy and matplotlib, pinned to the versions the
-notebook was verified with.
+The first line installs the three libraries the notebook imports — pandas,
+numpy and matplotlib — pinned to the versions it was verified with. The second
+installs Jupyter Notebook, the browser-based viewer that runs the cells. It is
+not pinned: any current version works.
+
+> Until `requirements.txt` is added (see the status note at the top), replace
+> the first line with `pip install pandas numpy matplotlib`.
 
 ## 4. Download the data
 
@@ -89,17 +121,40 @@ manual instructions: open the NASA Prognostics Data Repository, download the
 
 ## 5. Open the notebook and run all cells
 
-```bash
-jupyter lab rulpte.ipynb
+Start the viewer from the project folder, with the environment still active:
+
+```powershell
+python -m notebook
 ```
 
-(Or `jupyter notebook rulpte.ipynb`, or open the file in VS Code.)
+Your browser opens at `http://localhost:8888/tree`. If it does not open by
+itself, copy the full URL the terminal printed — it ends in `?token=...` — and
+paste it into the browser. Keep that terminal window open: closing it stops
+the server.
 
-Make sure the notebook is using the environment from step 2 — the interpreter
-whose path ends in `.venv`. Then **Kernel → Restart Kernel and Run All Cells**.
+Then:
+
+1. Click **rulpte.ipynb** in the file list.
+2. Check the kernel name at the top right: it must be the one from your
+   environment (it normally reads *Python 3 (ipykernel)*). If the notebook
+   cannot import pandas later, this is the first thing to check.
+3. Menu **Kernel → Restart Kernel and Run All Cells**.
+4. Cell by cell instead: click a cell and press **Shift+Enter**.
+
+Two ways to stop: `Ctrl+C` twice in the terminal, or close the browser tab and
+stop the process.
+
+`python -m notebook` works even when the `jupyter` command is not on your PATH,
+which is the usual reason `jupyter notebook` fails on Windows.
 
 The notebook's first cell repeats the data-download step, in case you opened
 the notebook before running step 4.
+
+### Prefer an editor?
+
+VS Code: install the *Jupyter* extension, open `rulpte.ipynb`, pick the
+interpreter inside `.venv`, and press *Run All*. The steps above are the same
+without any editor.
 
 ## What to expect
 
@@ -129,10 +184,23 @@ history.md        version history, newest first
 
 ## Troubleshooting
 
+**`No module named notebook`** — the viewer is not installed in the
+environment you are running from. Run `pip install notebook` with the same
+`python` you used to start it. To be certain, start it as
+`python -m notebook` and check `python -c "import sys; print(sys.executable)"`.
+
+**`jupyter` is not recognised, or `jupyter notebook` opens nothing** — use
+`python -m notebook` instead. The `jupyter` shortcut is often missing on
+Windows while the module is present.
+
 **`ModuleNotFoundError: No module named 'pandas'`** — the notebook is running
-on an interpreter that is not your virtual environment. Check with
+on an interpreter that is not your virtual environment. In the notebook run
 `import sys; print(sys.executable)`; the path must end in `.venv`. Pick that
-kernel, or `pip install -r requirements.txt` in the active environment.
+kernel, or `pip install pandas numpy matplotlib` in the active environment.
+
+**The browser does not open** — copy the URL with the token from the terminal
+into the browser by hand. If the port is taken, run
+`python -m notebook --port 8889`.
 
 **`python download_data.py` fails with a network error** — the NASA mirror was
 unreachable. Retry, or use the manual download steps it prints.
@@ -140,12 +208,12 @@ unreachable. Retry, or use the manual download steps it prints.
 **`Error: not found in the zip`** — a partial or wrong archive was downloaded.
 Delete `data/` and run `python download_data.py --force`.
 
-**The figures do not appear** — run the cells inside Jupyter, not from a plain
-`python` script, and do not add `matplotlib.use("Agg")`. Restart the kernel and
-run all cells again.
+**The figures do not appear** — run the cells inside the notebook, not from a
+plain `python` script, and do not add `matplotlib.use("Agg")`. Restart the
+kernel and run all cells again.
 
 **A matplotlib cache permission error** — point the cache somewhere writable
-before starting Jupyter:
+before starting the notebook:
 `set MPLCONFIGDIR=%TEMP%\mplcache` (Windows) or
 `export MPLCONFIGDIR=/tmp/mplcache` (macOS/Linux).
 
