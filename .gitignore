@@ -26,3 +26,6 @@ Thumbs.db
 
 # Author's own working notes, not part of the published project
 PROJECT_NOTES.md
+
+# Local agent tooling (project-scoped skills)
+.dsh/

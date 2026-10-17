@@ -117,9 +117,45 @@ they disagree. The plot stops at RUL 240 because past that point fewer than 20
 engines are still alive, so an "average" would be a rumour, not a measurement.
 The panel says so rather than hiding it.
 
+**Figure 3 — where the model fails.** The same 100 test engines, one point each.
+The left panel puts the guess against the truth; the dashed diagonal is perfect
+prediction, and most points sit above it, which is the 19-cycle optimism. The
+right panel shows only the mistake, with a band at ±RMSE so you can see which
+errors are ordinary and which are large.
+
 ---
 
-## 7. What RMSE means, with a picture in your head
+## 7. The model, in plain words
+
+The notebook also fits a model, which is just a formula with dials that get
+turned until its guesses line up with engines whose end we already know.
+
+**What it sees.** One row per cycle: the 14 live sensors, and the RUL of that
+cycle as the answer to learn. That is the whole input. No engine name, no date,
+nothing from the future.
+
+**How we know it is not cheating.** 20 of the 100 engines are hidden before the
+first dial is turned, and they stay hidden until the guesses are made. A model
+tested on the same engines it learned from is like a student sitting the exam
+they already saw — it proves nothing.
+
+**The yardstick.** "Every engine has about 71 cycles left" is the dumbest
+possible guess, and it is scored the same way. Our model has to beat it to mean
+anything. On the 20 hidden engines the model scores **46.8** cycles of RMSE
+against **71.0**, so the sensors do carry real information.
+
+**The real quiz.** The official test set is 100 different engines, each recorded
+only up to some point in its life. The model predicts once per engine, from its
+last recorded cycle, and the answers are in `RUL_FD001.txt`. Score:
+**30.2** cycles, against **51.8** for the average guess.
+
+**What it gets wrong.** The model leans high: on average it says 94.3 cycles
+when the truth is 75.5, about 19 cycles too optimistic, and that lean is roughly
+the same whether the engine is fresh or dying. That is why the third figure
+shows the error, not just the score. A model you cannot see the mistakes of is
+a model you cannot improve.
+
+## 8. What RMSE means, with a picture in your head
 
 Suppose five engines have 10, 20, 30, 40 and 50 cycles left and the model says
 30 for all of them. The mistakes are −20, −10, 0, +10, +20. Square them so
@@ -130,7 +166,7 @@ with published results.
 
 ---
 
-## 8. How to run it
+## 9. How to run it
 
 1. `python -m venv .venv` then `.venv\Scripts\activate`
 2. `pip install -r requirements.txt`
@@ -142,7 +178,7 @@ The full walkthrough, with copy-paste commands and troubleshooting, is in
 
 ---
 
-## 9. The three rules this project keeps
+## 10. The three rules this project keeps
 
 1. **Never let the model see the future.** Features come from a cycle; the
    answer comes from later cycles. Mixing them is leakage, and it is the number

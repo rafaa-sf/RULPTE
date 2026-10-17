@@ -3,10 +3,13 @@
 A small, readable study of how turbofan engines degrade, using NASA's C-MAPSS
 FD001 run-to-failure data. The notebook loads the raw sensor records, labels
 each one with its remaining useful life (RUL), drops the sensors that never
-move, and plots the degradation signal that a predictive model would learn
-from.
+move, plots the degradation signal, and fits a baseline model that predicts how
+many cycles an engine has left.
 
-This is the data-and-plots milestone. A baseline RUL model comes next.
+The baseline is deliberately simple — plain least squares on the 14 live
+sensors, no deep learning — so the numbers are a floor, not a ceiling:
+**RMSE 30.2 cycles** on the 100 official test engines, against 51.8 for always
+guessing the fleet average.
 
 New to the vocabulary? **[GUIDE.md](GUIDE.md)** explains every term, every file
 and every figure in plain words, with no maths.
@@ -24,7 +27,7 @@ python -m notebook
 ```
 
 Your browser opens a file list. Click **rulpte.ipynb**, then menu
-**Kernel → Restart Kernel and Run All Cells**. The two figures appear under
+**Kernel → Restart Kernel and Run All Cells**. The three figures appear under
 their cells. `Ctrl+C` twice in the terminal stops the server.
 
 The sections below explain each step of that block, for Windows, macOS and
@@ -32,10 +35,11 @@ Linux.
 
 ## What you get
 
-- A notebook that loads the data, checks it, and plots it, top to bottom in
-  about two seconds (measured: 1.7 s for all seven code cells).
-- Two figures: four engines followed from first flight to failure, and the
-  fleet-wide trend as RUL counts down.
+- A notebook that loads the data, checks it, plots it and scores a baseline
+  model, top to bottom in a few seconds.
+- Three figures: four engines followed from first flight to failure, the
+  fleet-wide trend as RUL counts down, and the model's errors on the 100
+  test engines.
 - No deep learning, no web app, no dashboard, and no editor required beyond a
   browser. Just the data and what it says.
 
@@ -151,7 +155,7 @@ A notebook shows its code, but you do not have to look at it.
 **Hide the code in place.** In JupyterLab open menu **View → Collapse All Code**
 (command palette: *Collapse All Code*). Every code cell folds down to its
 output, so what is left on screen is the written explanations, the printed
-numbers and the two figures. The cells still run: **Run → Run All Cells** or
+numbers and the three figures. The cells still run: **Run → Run All Cells** or
 **Kernel → Restart Kernel and Run All Cells** executes everything and the
 figures reappear below the folded cells. **View → Expand All Code** brings the
 code back.
@@ -188,12 +192,19 @@ without any editor.
   2×2 panels. The band is the interquartile range across engines. The plot
   stops at RUL 240 because fewer than 20 engines are still running beyond that,
   and the panel says so.
+- The model: every cycle is one row, the 14 live sensors are the features, RUL
+  is the target. 20 of the 100 engines are held back and never seen while
+  fitting, which gives **RMSE 46.8** cycles against 71.0 for the average guess.
+- Figure 3: the 100 official test engines as points, predicted against true
+  with the perfect diagonal, and the error against true life with the ±RMSE
+  band drawn in. It shows the weakness as well as the score: the model leans
+  about 19 cycles high, and that lean is the same at every age.
 - Nothing is written to disk. The notebook only reads the data and draws.
 
 ## Project layout
 
 ```
-rulpte.ipynb      the notebook: load, check, label, plot
+rulpte.ipynb      the notebook: load, check, label, plot, fit, score
 download_data.py  fetches the NASA archive into data/
 requirements.txt  pinned dependencies
 GUIDE.md          plain-words explanation of every term, file and figure
