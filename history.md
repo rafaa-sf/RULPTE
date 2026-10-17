@@ -2,6 +2,22 @@
 
 Newest first. One entry per version.
 
+## 1.2 — 2026-10-17 — Hard subset, real features
+
+- The data layer now spans all four subsets: FD001 and FD003 fly in one operating
+  condition, FD002 and FD004 in six, and every sensor is standardised inside its
+  own condition before it reaches the model.
+- Each cycle becomes 42 features — the 14 live sensors at their current value,
+  their 20-cycle average and their 20-cycle change — instead of 14 raw readings.
+- The headline is FD002, the hard subset: 35.0 cycles RMSE on its 259 test
+  engines against 59.8 for always guessing the average. FD001 scores 35.6 against
+  51.8. FD001 was 30.2 under the old 14-feature model; the features were chosen
+  on held-out engines cut at random cycles (35.8 against 39.6 on FD001, 37.7
+  against 39.8 on FD002), never on the test score, so that 30.2 was one
+  favourable draw of 100 engines rather than a better model.
+- All three figures share one design language: colour means drift direction, grey
+  is context, and the dash pattern identifies the engine.
+
 ## 1.1 — 2026-10-17 — One command from clone to results
 
 - `run.py` replaces the five hand-typed steps: it creates `.venv`, installs the

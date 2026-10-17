@@ -1,26 +1,27 @@
 # RULPTE — Remaining Useful Life Prediction for Turbofan Engines
 
-A small, readable study of how turbofan engines degrade, using NASA's C-MAPSS
-FD001 run-to-failure data: it labels every recorded cycle with its remaining
-useful life (RUL) and fits a deliberately simple baseline that predicts how many
-cycles an engine has left.
+A readable study of how turbofan engines degrade, using NASA's C-MAPSS data: it
+labels every recorded cycle with its remaining useful life (RUL) and fits a
+deliberately simple baseline that predicts how many cycles an engine has left. It
+runs on all four subsets, including the two with six flight conditions.
 
-> **Test RMSE 30.2 cycles** on the 100 official test engines, against 51.8 for
-> always guessing the fleet average. The caveat travels with the number: 46.3 /
-> 71.0 is the held-out figure on all cycles, and 27.9 / 54.1 once those cycles
-> are cut to the test's life range.
+> **Test RMSE 35.0 cycles on FD002**, against 59.8 for always guessing the fleet
+> average. FD002 is the hard one: 260 training engines, six operating conditions,
+> 259 test engines. FD001, the textbook single-condition set, scores 35.6
+> against 51.8.
 
-The baseline is plain least squares on the 14 live sensors, no deep learning, so
-the numbers are a floor, not a ceiling.
+The model is plain least squares on the 14 live sensors expanded to 42 features
+(current value, 20-cycle mean, 20-cycle change), with every sensor standardised
+inside its own flight condition. No deep learning, so the numbers are a floor,
+not a ceiling.
 
 New to the vocabulary? **[GUIDE.md](GUIDE.md)** explains every term, every file
 and every figure in plain words, with no maths.
 
-![Predicted RUL against true RUL for the 100 test engines, and the error against true life with the ±RMSE band](figures/figure-3.png)
+![Predicted RUL against true RUL for the FD002 test engines, and the error against true life with the ±RMSE band](figures/figure-3.png)
 
-*Figure 3 — the 100 official test engines: predictions against the truth, then
-the error against true life, with the ±RMSE band and the model's slight
-optimism.*
+*Figure 3 — FD002's 259 official test engines: predictions against the truth,
+then the error against true life, with the ±RMSE band and the model's optimism.*
 
 ## Quick start (one command)
 
@@ -95,15 +96,19 @@ Linux.
 
 All figures are RMSE in cycles. Lower is better.
 
-| What is scored | Model | Always guessing the average |
-| --- | --- | --- |
-| 20 held-out engines, every cycle | 46.3 | 71.0 |
-| Same held-out engines, only cycles in the test's life range | 27.9 | 54.1 |
-| Official test: one prediction per engine at its last recorded cycle | 30.2 | 51.8 |
+| What is scored | FD001 | always guessing | FD002 | always guessing |
+| --- | --- | --- | --- | --- |
+| 20% of engines held out, every cycle | 42.1 | 71.0 | 38.8 | 69.8 |
+| Same held-out engines, only cycles in the test's life range | 25.8 | 54.1 | 31.2 | 54.7 |
+| Official test: one prediction per engine at its last recorded cycle | 35.6 | 51.8 | 35.0 | 59.8 |
 
-Only the last row is the official score. The other two are the honest checks
+Only the last row is the official score. The rows above are the honest checks
 around it: the first includes young engines with 300 cycles left, the second is
 scored the way the test set is scored.
+
+The features were chosen on held-out engines cut at a random cycle, which is the
+condition the test set poses, and never on the test score itself: 35.8 against
+39.6 cycles on FD001, 37.7 against 39.8 on FD002.
 
 ## What you need
 
@@ -151,8 +156,9 @@ pip install -r requirements.txt
 pip install notebook
 ```
 
-The first line installs the three libraries the notebook imports — pandas,
-numpy and matplotlib — pinned to the versions it was verified with. The second
+The first line installs the four libraries the notebook imports — pandas,
+numpy, matplotlib and scikit-learn, the last for the k-means that finds the six
+flight conditions — pinned to the versions it was verified with. The second
 installs Jupyter Notebook, the browser-based viewer that runs the cells. It is
 not pinned: any current version works.
 
@@ -162,13 +168,17 @@ not pinned: any current version works.
 python download_data.py
 ```
 
-It fetches the NASA archive once, keeps only the FD001 files, deletes the
-zip, and prints a sanity check. You should see:
+It fetches the NASA archive once, keeps the twelve data files for all four
+subsets, deletes the zip, and prints a sanity check per file. You should see:
 
 ```
   train_FD001.txt: 20631 rows, 100 engines -> OK
-  test_FD001.txt: 13096 rows, 100 engines -> OK
-  RUL_FD001.txt: 100 rows -> OK
+  ...
+  train_FD002.txt: 53759 rows, 260 engines -> OK
+  test_FD002.txt: 33991 rows, 259 engines -> OK
+  RUL_FD002.txt: 259 rows -> OK
+  ...
+  RUL_FD004.txt: 248 rows -> OK
 ```
 
 The files land in `data/`, which git ignores. Use `python download_data.py --force`
@@ -177,7 +187,7 @@ to download again.
 If the download is blocked (locked-down network, proxy), the script prints
 manual instructions: open the NASA Prognostics Data Repository, download the
 *Turbofan Engine Degradation Simulation Data Set* zip, unzip it, and copy
-`train_FD001.txt`, `test_FD001.txt` and `RUL_FD001.txt` into
+the twelve files `train_`, `test_` and `RUL_` for `FD001` to `FD004` into
 `data/`.
 
 ## 5. Open the notebook and run all cells
@@ -225,11 +235,13 @@ read-only: it creates no files.
   2×2 panels. The band is the interquartile range across engines. The plot
   stops at RUL 240 because fewer than 20 engines are still running beyond that,
   and the panel says so.
-- The model: every cycle is one row, the 14 live sensors are the features, RUL
-  is the target, and 20 of the 100 engines are held back and never seen while
-  fitting. The three scores are in the results table above.
-- Figure 3: the model leans about 19 cycles high, and it leans high at every
-  age, worst with 40-80 cycles left.
+- The model: every cycle is one row, the 14 live sensors become 42 features
+  (current value, 20-cycle mean, 20-cycle change), RUL is the target, and one
+  engine in five is held back and never seen while fitting. Both subsets score
+  in the results table above.
+- Figure 3: FD002's test engines. The model leans about 16 cycles high, and that
+  lean is not flat — it is worst on engines with roughly 70 cycles left, and
+  turns negative for engines still above about 150 cycles.
 - Nothing is written to disk. The notebook only reads the data and draws.
 
 ## Reading it without the code
@@ -332,7 +344,8 @@ Please cite it as:
 > Set*, NASA Prognostics Data Repository, NASA Ames Research Center, Moffett
 > Field, CA.
 
-Only the FD001 subset is used here: one operating condition, one fault mode.
+FD001 and FD003 have one operating condition; FD002 and FD004 have six, so
+sensors are standardised inside each condition before anything is modelled.
 The data is downloaded at run time and is not redistributed in this
 repository.
 

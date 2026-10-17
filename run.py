@@ -19,9 +19,11 @@ ROOT = pathlib.Path(__file__).resolve().parent
 VENV = ROOT / ".venv"
 DATA = ROOT / "data"
 NOTEBOOK = "rul_prediction.ipynb"
-DATA_FILES = ("train_FD001.txt", "test_FD001.txt", "RUL_FD001.txt")
+DATA_FILES = tuple(f"{kind}_{s}.txt" for s in ("FD001", "FD002", "FD003", "FD004")
+                   for kind in ("train", "test", "RUL"))
 MIN_PYTHON = (3, 12)
-EXPECTED = ("test RMSE: 30.2 cycles", "held-out RMSE: 46.3 cycles", "27.9 cycles")
+EXPECTED = ("FD001 test RMSE: 35.6 cycles", "FD001 held-out RMSE: 42.1 cycles",
+            "FD002 test RMSE: 35.0 cycles", "FD002 held-out RMSE: 38.8 cycles")
 
 
 def venv_python():

@@ -44,13 +44,13 @@ RULPTE/
 ├── history.md          what changed in each version
 ├── rul_prediction.ipynb        the notebook: the whole analysis, read top to bottom
 ├── download_data.py    fetches the NASA files into data/
-├── requirements.txt    the three Python libraries the notebook needs
+├── requirements.txt    the pinned Python libraries the notebook needs
 ├── LICENSE             MIT, so anyone may reuse this
 ├── figures/            one plot, shown at the top of the README
 └── data/               the NASA files (downloaded, not stored in git)
-    ├── train_FD001.txt   engines run to failure, so we know the answers
-    ├── test_FD001.txt    engines stopped early, the quiz
-    ├── RUL_FD001.txt     the correct answers for the quiz
+    ├── train_FD00*.txt   engines run to failure, so we know the answers
+    ├── test_FD00*.txt    engines stopped early, the quiz
+    ├── RUL_FD00*.txt     the correct answers for each quiz
     └── readme.txt        NASA's own description of the files (not fetched by the script)
 ```
 
@@ -61,16 +61,23 @@ command, and storing it twice would only bloat the repository.
 
 ## 4. The data files, in plain words
 
-**`train_FD001.txt`** — 20631 rows. Each row is one engine at one cycle: its
-number, how old it is, three settings, and 21 sensor readings. Every engine here
-starts at cycle 1 and ends at its last cycle, which is the cycle it failed on.
-That is what lets us build the answer key.
+**`train_FD001.txt`** — 20631 rows, 100 engines, one operating condition. Each row
+is one engine at one cycle: its number, how old it is, three settings, and 21
+sensor readings. Every engine starts at cycle 1 and ends at its last cycle, which
+is the cycle it failed on. That is what lets us build the answer key.
 
 **`test_FD001.txt`** — same layout, 13096 rows, 100 engines. Each engine stops
 part-way through its life; the file does not say what happens next.
 
 **`RUL_FD001.txt`** — 100 numbers: for each test engine, how many cycles were
 actually left when the recording stopped. This is the answer key for the quiz.
+
+**FD002, FD003, FD004** — the same three files for the other subsets. FD003 is
+FD001 with a second fault mode; FD002 and FD004 have six operating conditions, so
+the settings columns stop being constant and the sensor readings move with the
+conditions. FD002 has 260 training engines and 259 test engines; FD004 has 249
+and 248. The notebook scores FD001 and FD002: the easy textbook case and the hard
+one.
 
 **`readme.txt`** — NASA's notes. Its "26 sensor slots" line trips people up: the
 file has 26 columns in total, of which 21 are sensors. Both statements are true.
@@ -93,16 +100,16 @@ question.
 | **Degradation by engine** | Do the surviving sensors really drift as an engine ages? Figure 1 shows four engines of different lengths, one panel per strong sensor. |
 | **Fleet trend** | Does the drift hold across all 100 engines, not just the four? Figure 2 averages the fleet as RUL counts down. |
 | **Model input** | Turns the table into the model's exam paper: one row per cycle, 14 sensors as features, RUL as the target, 20 engines held back for testing. |
-| **Baseline model** | Can a straight line through the sensors beat the dumb guess? Fits plain least squares on the 14 sensors of the 80 visible engines and scores it on the 20 hidden ones: 46.3 against 71.0. |
-| **Score on the real test set** | How does it do on the official quiz? One prediction per test engine, from its last recorded cycle: 30.2 against 51.8, with the like-for-like 27.9 against 54.1 beside it. |
-| **Where the model fails** | Which mistakes does a single number hide? Figure 3 plots guess against truth and error against truth, so the 18.8-cycle optimism is visible. |
-| **Conclusions** | What did we learn? Fourteen sensors carry the signal, the baseline beats the average guess, and the model is optimistic by about 19 cycles. |
+| **Baseline model** | Can a straight line through the sensors beat the dumb guess? Turns the 14 sensors into 42 numbers, fits them on the visible engines of both subsets, and scores the hidden fifth: FD001 42.1 against 71.0, FD002 38.8 against 69.8. |
+| **Score on the real test set** | How does it do on the official quiz? One prediction per test engine, from its last recorded cycle: FD001 35.6 against 51.8, FD002 35.0 against 59.8, with the like-for-like numbers beside them. |
+| **Where the model fails** | Which mistakes does a single number hide? Figure 3 plots guess against truth and error against truth, so the mid-life optimism is visible. |
+| **Conclusions** | What did we learn? Fourteen sensors carry the signal, the baseline beats the average guess on both subsets, and it is optimistic by about 16 cycles. |
 
 Nothing is written to disk. The notebook reads the data and draws pictures.
 
 ---
 
-## 6. What the two pictures show
+## 6. What the three pictures show
 
 **Figure 1 — one engine's life, four sensors.** Each panel is one sensor. The
 faint scribble is the raw record, which is noisy, like a heart-rate trace. The
@@ -121,11 +128,12 @@ they disagree. The plot stops at RUL 240 because past that point fewer than 20
 engines are still alive, so an "average" would be a rumour, not a measurement.
 The panel says so rather than hiding it.
 
-**Figure 3 — where the model fails.** The same 100 test engines, one point each.
+**Figure 3 — where the model fails.** FD002's 259 test engines, one point each.
 The left panel puts the guess against the truth; the dashed diagonal is perfect
-prediction, and most points sit above it, which is the 19-cycle optimism. The
+prediction, and most points sit above it, which is the model's optimism. The
 right panel shows only the mistake, with a band at ±RMSE so you can see which
-errors are ordinary and which are large.
+errors are ordinary and which are large — and the orange line marks how far the
+whole cloud sits above zero, and where that is worst.
 
 ---
 
@@ -134,46 +142,51 @@ errors are ordinary and which are large.
 The notebook also fits a model, which is just a formula with dials that get
 turned until its guesses line up with engines whose end we already know.
 
-**What it sees.** One row per cycle: the 14 live sensors, and the RUL of that
-cycle as the answer to learn. That is the whole input. No engine name, no date,
-nothing from the future.
+**What it sees.** One row per cycle: the 14 live sensors turned into 42 numbers
+— the reading now, its average over the last 20 cycles, and how much it moved
+across those 20 cycles — plus the RUL of that cycle as the answer to learn.
+Nothing else: no engine name, no date, nothing from the future.
 
-**How we know it is not cheating.** 20 of the 100 engines are hidden before the
-first dial is turned, and they stay hidden until the guesses are made. A model
-tested on the same engines it learned from is like a student sitting the exam
-they already saw — it proves nothing.
+**A hard extra rule.** Engines in FD002 and FD004 fly in six different operating
+conditions and the sensors read differently in each, so a raw 550 that means
+"fine on a hot day" can mean "worn out on a cold one". Each sensor is therefore
+rescaled inside its own condition before the model ever sees it.
 
-**The yardstick.** "Every engine has about 106 cycles left" is the dumbest
-possible guess, and it is scored the same way. Our model has to beat it to mean
-anything. On the 20 hidden engines the model scores **46.3** cycles of RMSE
-against **71.0**, so the sensors do carry real information.
+**How we know it is not cheating.** One engine in five is hidden before the first
+dial is turned, and it stays hidden until the guesses are made. A model tested on
+the engines it learned from is like a student sitting the exam they already saw —
+it proves nothing.
 
-**A fair comparison.** Those two numbers are not the same test. The 46.3 averages
-every single cycle of the hidden engines, including young ones with 300 cycles
-left; the real quiz has one row per engine, near the end of life. Restrict the
-hidden engines to the same life range and the model scores **27.9** against
-**54.1**. Compare like with like or the second number flatters the model.
+**The yardstick.** "Every engine has about the fleet average left" is the dumbest
+possible guess and is scored the same way. Our model has to beat it to mean
+anything. On the hidden engines it scores **42.1** on FD001 (average guess 71.0)
+and **38.8** on FD002 (69.8), so the sensors do carry real information.
 
-**The real quiz.** The official test set is 100 different engines, each recorded
-only up to some point in its life. The model predicts once per engine, from its
-last recorded cycle, and the answers are in `RUL_FD001.txt`. Score:
-**30.2** cycles, against **51.8** for the average guess.
+**A fair comparison.** Those numbers average every cycle of the hidden engines,
+young ones with 300 cycles left included; the real quiz has one row per engine,
+near the end of life. Restricted to the quiz's life range: **25.8** against 54.1
+on FD001, **31.2** against 54.7 on FD002. Compare like with like.
 
-**What it gets wrong.** The model leans high: on average it says 94.3 cycles
-when the truth is 75.5, about 19 cycles too optimistic. The lean is not flat:
-it peaks in mid-life, about +40 cycles with roughly 70 left, and shrinks to
-about +8 close to failure and +3 early in life. That is why the third figure
-shows the error, not just the score. A model you cannot see the mistakes of is
-a model you cannot improve.
+**The real quiz.** The official test sets are engines we never used, each recorded
+only up to some point in its life. The model predicts once per engine from its
+last recorded cycle: **35.6** against 51.8 on FD001's 100 engines, and **35.0**
+against 59.8 on FD002's 259. FD002 is the headline because it is harder: six
+conditions and 260 training engines.
 
-## 8. What RMSE means, with a picture in your head
+**Why FD001 was easier before.** The first version used the 14 raw readings and
+scored 30.2 on FD001's quiz. That version was not shipped, and the choice between
+the two was not made on the quiz — that would be marking your own homework. It
+was made on a harder test: cut every hidden engine at a random point in its life,
+exactly as the quiz does, and score that. There the 42 numbers win, **35.8
+against 39.6** on FD001 and **37.7 against 39.8** on FD002. The quiz is a single
+draw of 100 engines; the random-cut test never touches it.
 
-Suppose five engines have 10, 20, 30, 40 and 50 cycles left and the model says
-30 for all of them. The mistakes are −20, −10, 0, +10, +20. Square them so
-minus signs cannot cancel: 400, 100, 0, 100, 400. Average: 200. Square root:
-about 14. So the model is "off by about 14 cycles". That is the number this
-project will quote, and it is the same unit NASA uses, so it can be compared
-with published results.
+**What it gets wrong.** On FD002 the model says 97.3 when the truth is 81.2 —
+about 16 cycles too optimistic (about 27 on FD001). The lean is not flat: it is
+worst in mid-life, around +40 cycles with roughly 70 left, and turns slightly
+negative above about 150 cycles. That is why the third figure shows the error,
+not just the score. A model you cannot see the mistakes of is a model you cannot
+improve.
 
 ---
 
