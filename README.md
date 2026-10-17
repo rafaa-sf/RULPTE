@@ -26,7 +26,7 @@ python download_data.py
 python -m notebook
 ```
 
-Your browser opens a file list. Click **rulpte.ipynb**, then menu
+Your browser opens a file list. Click **rul_prediction.ipynb**, then menu
 **Kernel → Restart Kernel and Run All Cells**. The three figures appear under
 their cells. `Ctrl+C` twice in the terminal stops the server.
 
@@ -132,7 +132,7 @@ the server.
 
 Then:
 
-1. Click **rulpte.ipynb** in the file list.
+1. Click **rul_prediction.ipynb** in the file list.
 2. Check the kernel name at the top right: it must be the one from your
    environment (it normally reads *Python 3 (ipykernel)*). If the notebook
    cannot import pandas later, this is the first thing to check.
@@ -161,11 +161,11 @@ figures reappear below the folded cells. **View → Expand All Code** brings the
 code back.
 
 **Or export a read-only page.** After running all cells once, this writes
-`rulpte.html` with the text and the figures and no code at all:
+`rul_prediction.html` with the text and the figures and no code at all:
 
 ```powershell
 pip install nbconvert
-python -m nbconvert --to html --no-input rulpte.ipynb
+python -m nbconvert --to html --no-input rul_prediction.ipynb
 ```
 
 Open the file with a double click. It needs no server, no kernel and no
@@ -174,7 +174,7 @@ it. It is a snapshot: re-export after any change, and keep it out of git.
 
 ### Prefer an editor?
 
-VS Code: install the *Jupyter* extension, open `rulpte.ipynb`, pick the
+VS Code: install the *Jupyter* extension, open `rul_prediction.ipynb`, pick the
 interpreter inside `.venv`, and press *Run All*. The steps above are the same
 without any editor.
 
@@ -205,7 +205,7 @@ the way the test set is scored, it is 27.9 against 54.1.
 ## Project layout
 
 ```
-rulpte.ipynb      the notebook: load, check, label, plot, fit, score
+rul_prediction.ipynb      the notebook: load, check, label, plot, fit, score
 download_data.py  fetches the NASA archive into data/
 requirements.txt  pinned dependencies
 GUIDE.md          plain-words explanation of every term, file and figure

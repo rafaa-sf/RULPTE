@@ -42,7 +42,7 @@ RULPTE/
 ├── README.md           how to install and run, step by step
 ├── GUIDE.md            this file: what everything does and why
 ├── history.md          what changed in each version
-├── rulpte.ipynb        the notebook: the whole analysis, read top to bottom
+├── rul_prediction.ipynb        the notebook: the whole analysis, read top to bottom
 ├── download_data.py    fetches the NASA files into data/
 ├── requirements.txt    the three Python libraries the notebook needs
 ├── LICENSE             MIT, so anyone may reuse this
@@ -177,7 +177,7 @@ with published results.
 1. `python -m venv .venv` then `.venv\Scripts\activate`
 2. `pip install -r requirements.txt`
 3. `python download_data.py`
-4. `python -m notebook`, open `rulpte.ipynb`, **Run All**
+4. `python -m notebook`, open `rul_prediction.ipynb`, **Run All**
 
 The full walkthrough, with copy-paste commands and troubleshooting, is in
 [README.md](README.md).
