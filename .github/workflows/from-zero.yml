@@ -2,7 +2,8 @@ name: from zero
 
 # Proves the promise in the README: a machine with nothing but Python 3.12
 # can set the project up and run the notebook, using the same one command a
-# reader uses. It fails if the notebook stops printing its scores.
+# reader uses. It fails if the notebook stops printing its scores, or if the
+# command-line tool stops agreeing with the notebook.
 
 on:
   push:
@@ -12,7 +13,7 @@ on:
 
 jobs:
   setup-and-run:
-    name: run.py --check on a clean runner
+    name: run.py --check and pytest on a clean runner
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -22,5 +23,10 @@ jobs:
         with:
           python-version: "3.12"
 
+      # Creates .venv, installs the pinned requirements plus pytest, downloads
+      # the data and executes the notebook, failing on any score drift.
       - name: Set up and run the notebook the way a newcomer would
         run: python run.py --check
+
+      - name: Check the tool against the notebook
+        run: python run.py --test

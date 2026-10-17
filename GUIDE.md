@@ -104,6 +104,8 @@ question.
 | **Score on the real test set** | How does it do on the official quiz? One prediction per test engine, from its last recorded cycle: FD001 35.6 against 51.8, FD002 35.0 against 59.8, with the like-for-like numbers beside them. |
 | **How sure is it?** | How wide is the band around a prediction? A nominal 80% interval, sized on held-out engines cut early: ±42.7 cycles on FD001, ±48.4 on FD002, covering 71% and 83% of the real answers. |
 | **Where the model fails** | Which mistakes does a single number hide? Figure 3 plots guess against truth and error against truth, so the mid-life optimism is visible. |
+| **How stable is that number?** | Is 35 one lucky draw? Five folds, five repeats, a fresh random cut each time: 38.9 ± 2.4 cycles on FD001, 38.5 ± 1.8 on FD002, and the error split by how much life is left. |
+| **What to do with the number** | A life estimate is only useful if it changes what someone does: the pessimistic end of the interval becomes GROUND, INSPECT, PLAN or MONITOR, and the 259 FD002 test engines are counted into those bands. |
 | **Conclusions** | What did we learn? Fourteen sensors carry the signal, the baseline beats the average guess on both subsets, and it is optimistic by about 16 cycles. |
 
 Nothing is written to disk. The notebook reads the data and draws pictures.
@@ -193,6 +195,16 @@ repeats the whole exercise five times with different engines held back and
 different cut points: 38.9 ± 2.4 on FD001, 38.5 ± 1.8 on FD002. Two models
 whose scores differ by a cycle or two are not different; the band around the
 number is as real as the number.
+
+**What the number is for.** A life estimate only earns its keep if it changes
+what someone does next, so the last section reads the pessimistic end of the
+interval and turns it into an action: 5 cycles or fewer means ground the engine,
+up to 20 inspect it before the next flight, up to 60 book the maintenance
+window, more than that and there is nothing to do yet. On FD002's 259 test
+engines that grounds 60, inspects 16, plans 54 and monitors the remaining 129.
+`predict.py` applies the same four bands to any engine file you point it at, and
+`python run.py --test` checks that the tool and the notebook still agree.
+
 
 **Is it any good?** Against published work, no, not yet: deep sequence models
 read the whole history and report about 12 cycles of error on FD001 against this

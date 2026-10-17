@@ -13,9 +13,13 @@ graphify-out/
 # Read-only export of the notebook (see README)
 rul_prediction.html
 
+# Build artefact from `python predict.py train`
+model.npz
+
 # Python
 __pycache__/
 *.py[cod]
+.pytest_cache/
 
 # Virtual environment (a venv also writes its own .gitignore with "*")
 .venv/

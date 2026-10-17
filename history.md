@@ -2,6 +2,16 @@
 
 Newest first. One entry per version.
 
+## 1.4 — 2026-10-17 — From number to decision
+
+- The notebook ends by turning the pessimistic end of the interval into an
+  action: GROUND, INSPECT, PLAN or MONITOR, with the 259 FD002 test engines
+  counted into those four bands.
+- `predict.py` is the tool: `train` writes a 9 kB `model.npz`, `predict` answers
+  for any C-MAPSS file, `score` reproduces the published numbers.
+- Seven pytest checks keep the tool and the notebook in agreement, and CI now
+  runs both `run.py --check` and `run.py --test` on every push.
+
 ## 1.3 — 2026-10-17 — How stable, and how it compares
 
 - Repeated grouped cross-validation (5 folds by engine, 5 repeats, a fresh random

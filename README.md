@@ -134,7 +134,39 @@ reaches RMSE 12.33 on FD001 and 11.76 on FD003, against this project's 35.6 on
 FD001. That gap is the price of keeping the model readable in ten lines of
 numpy; it is not a claim of parity. Published numbers also differ in RUL
 capping and clipping, so compare magnitudes, not decimals.
-engineered away.
+
+### Use it on an engine you have not seen
+
+The notebook is the report; `predict.py` is the tool. It trains the same model,
+saves it, and answers for any file in the C-MAPSS format. With the virtual
+environment activated:
+
+```powershell
+python predict.py train
+python predict.py predict --subset FD002 --file data/test_FD002.txt
+python predict.py score --subset FD001
+```
+
+`predict` prints one line per engine — `engine 4  RUL 92  p10 43  p90 140  PLAN`
+— and the action comes from the pessimistic end of the interval, never the
+middle:
+
+| Lower bound on life | Action | What it means |
+| --- | --- | --- |
+| 5 cycles or fewer | `GROUND` | out of service until inspected |
+| 6 to 20 | `INSPECT` | look before the next flight |
+| 21 to 60 | `PLAN` | book the maintenance window |
+| above 60 | `MONITOR` | no action yet |
+
+Those thresholds are a demonstration policy, not airworthiness guidance: a real
+fleet needs its own maintenance-interval and dispatch-reliability rules.
+`model.npz` is a build artefact (about 9 kB, not committed) and
+`python predict.py train` recreates it.
+
+`python run.py --test` runs the test suite: seven checks that the tool
+reproduces the notebook's 35.6 and 35.0 and that the four bands map to the four
+actions. Continuous integration runs both that and `--check` on every push.
+
 ## What you need
 
 - Python 3.12 or newer (developed on 3.14; the pinned numpy 2.5.4 needs 3.12)

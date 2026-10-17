@@ -6,7 +6,8 @@ pinned libraries plus the notebook viewer, download the NASA data, then open
 the notebook. Safe to run again: each step is skipped when it is already done.
 
     python run.py           set up, then open the notebook
-    python run.py --check   set up, run the notebook headless, print the scores
+    python run.py --check   set up, run the notebook headless, check the scores
+    python run.py --test    set up, then run the test suite against the notebook
     python run.py --dry-run print the commands without running them
 """
 import argparse
@@ -71,6 +72,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true",
                         help="run the notebook headless and print the scores, without opening a browser")
+    parser.add_argument("--test", action="store_true",
+                        help="run the test suite, which checks the tool against the notebook")
     parser.add_argument("--dry-run", action="store_true",
                         help="print the commands without running them")
     args = parser.parse_args()
@@ -100,6 +103,10 @@ def main():
     viewer = ["notebook"] + (["nbconvert"] if args.check else [])
     run([python, "-m", "pip", "install", *viewer], args.dry_run)
 
+    if args.test:
+        step("Installing pytest")
+        run([python, "-m", "pip", "install", "pytest"], args.dry_run)
+
     if all((DATA / name).is_file() for name in DATA_FILES):
         print(f"Data: already in {DATA.name}/, skipping the download")
     else:
@@ -120,6 +127,11 @@ def main():
         if missing:
             sys.exit("\nThe notebook did not print the expected score.")
         print("\nAll cells ran and the scores match.")
+        return
+
+    if args.test:
+        step("Running the tests")
+        run([python, "-m", "pytest", "tests", "-q"], args.dry_run, capture=False)
         return
 
     step("Opening the notebook in your browser")
