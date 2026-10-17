@@ -84,7 +84,7 @@ question.
 
 | Section | The question it answers |
 | --- | --- |
-| **Introduction** | What is this notebook about? Written by the author. |
+| **Introduction** | What is this notebook about? The question it answers, the data it uses, and what it scores at the end. |
 | **Imports and paths** | Which tools are needed, and where are the files? Loads `pandas` (tables), `numpy` (numbers), `matplotlib` (pictures), and points at `data/`. |
 | **Load data** | Reads the three text files into tables and names the columns: `unit`, `cycle`, `setting_1..3`, `sensor_1..21`. |
 | **Sanity check** | Are these really the files we think? Prints the shapes, the types, and counts empty cells. A wrong file that looks plausible is the most expensive mistake in this field, so the check is loud on purpose. |
@@ -96,7 +96,7 @@ question.
 | **Baseline model** | Can a straight line through the sensors beat the dumb guess? Fits plain least squares on the 14 sensors of the 80 visible engines and scores it on the 20 hidden ones: 46.3 against 71.0. |
 | **Score on the real test set** | How does it do on the official quiz? One prediction per test engine, from its last recorded cycle: 30.2 against 51.8, with the like-for-like 27.9 against 54.1 beside it. |
 | **Where the model fails** | Which mistakes does a single number hide? Figure 3 plots guess against truth and error against truth, so the 18.8-cycle optimism is visible. |
-| **Conclusions** | What did we learn? Written by the author. |
+| **Conclusions** | What did we learn? Fourteen sensors carry the signal, the baseline beats the average guess, and the model is optimistic by about 19 cycles. |
 
 Nothing is written to disk. The notebook reads the data and draws pictures.
 

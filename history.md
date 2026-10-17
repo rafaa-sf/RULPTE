@@ -2,6 +2,20 @@
 
 Newest first. One entry per version.
 
+## 1.0 — 2026-10-17 — First release
+
+- The notebook is `rul_prediction.ipynb`: it opens with a "Before you start"
+  cell, closes with the author's introduction and conclusions, and ships with
+  its outputs saved, so the three figures are visible before running anything.
+- Shippable from a clean clone: `requirements.txt` pins pandas 3.0.6,
+  numpy 2.5.4 and matplotlib 3.11.2, `download_data.py` fetches the data, and
+  the README walks from the GitHub page to a finished run with a Results table,
+  a troubleshooting section and the NASA data credit.
+- Scores unchanged from 0.2 and restated in one table: 30.2 against 51.8 on the
+  official test engines, 46.3 against 71.0 held out, 27.9 against 54.1 like for
+  like.
+- A reviewer followed the README in a clean clone; the gaps it found are fixed.
+
 ## 0.2 — 2026-10-17 — Baseline RUL model
 
 - Adds features (the 14 live sensors) and labels, and splits by engine: 20 of
@@ -31,4 +45,5 @@ Newest first. One entry per version.
 
 ## Planned
 
-- 1.0 — First release: reproducible from a clean clone using the README.
+- 1.1 — Optional: a model that corrects the mid-life optimism, and the same
+  study on FD002 (six operating conditions) to show what the baseline loses.
