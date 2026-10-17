@@ -287,18 +287,21 @@ read-only: it creates no files.
   for 100 engines. `RUL_FD001.txt` holds the 100 true end-of-life values.
 - Seven of the 21 sensors never move (or move in only two values), so the
   notebook drops them and keeps 14.
-- Figure 1: four engines, 128 to 362 cycles long, rising and falling sensors.
-  Each panel shows the raw signal faintly and a 15-cycle rolling mean in bold,
-  so the trend clears the noise.
-- Figure 2: the same sensors averaged over the fleet as RUL counts down, in
-  2×2 panels. The band is the interquartile range across engines. The plot
-  stops at RUL 240 because fewer than 20 engines are still running beyond that,
-  and the panel says so.
+- A **Sensor guide** table opens the notebook: all 21 sensors, what each one
+  measures, its unit, and whether FD001 keeps it.
+- Figure 1: four engines, 128 to 362 flights long, rising and falling sensors.
+  Each panel is titled with the sensor's number, symbol and meaning, the vertical
+  axis carries its unit, and the raw reading on every flight sits faintly under a
+  bold 15-flight mean, so the trend clears the noise.
+- Figure 2: the same sensors averaged over the fleet as the remaining flights
+  count down, in 2×2 panels. The band is the middle half of the engines still
+  flying. The plot stops at 240 flights left because fewer than 20 engines are
+  still running beyond that, and the panel says so.
 - The model: every cycle is one row, the 14 live sensors become 42 features
   (current value, 20-cycle mean, 20-cycle change), RUL is the target, and one
   engine in five is held back and never seen while fitting. Both subsets score
   in the results table above.
-- Figure 3: FD002's test engines. The model leans about 11 cycles high, and that
+- Figure 3: FD002's test engines. The model leans about 11 flights high, and that
   lean is not flat — it is near zero for a dying engine, peaks near +30 with 40 to
   80 cycles left, and turns negative above about 140.
 - Nothing is written to disk. The notebook only reads the data and draws.

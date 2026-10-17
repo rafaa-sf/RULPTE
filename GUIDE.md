@@ -91,6 +91,7 @@ question.
 
 | Section | The question it answers |
 | --- | --- |
+| **Sensor guide** | What is each of the 21 sensors measuring, in what unit, and does FD001 keep it? The table at the top of the notebook, taken from the paper that introduced the dataset. |
 | **Introduction** | What is this notebook about? The question it answers, the data it uses, and what it scores at the end. |
 | **Imports and paths** | Which tools are needed, and where are the files? Loads `pandas` (tables), `numpy` (numbers), `matplotlib` (pictures), and points at `data/`. |
 | **Load data** | Reads the three text files into tables and names the columns: `unit`, `cycle`, `setting_1..3`, `sensor_1..21`. |
@@ -98,7 +99,7 @@ question.
 | **Train RUL** | Builds the answer key: for each engine, find its last cycle, then RUL = last cycle − this cycle. The final cycle gets 0, a fresh engine gets its whole life. |
 | **Sensor variability** | Which sensors are useless? A sensor that never changes cannot tell a healthy engine from a dying one, so anything with 5 or fewer distinct values is dropped. Seven go: `sensor_1, 5, 6, 10, 16, 18, 19`. Fourteen stay. |
 | **Degradation by engine** | Do the surviving sensors really drift as an engine ages? Figure 1 shows four engines of different lengths, one panel per strong sensor. |
-| **Fleet trend** | Does the drift hold across all 100 engines, not just the four? Figure 2 averages the fleet as RUL counts down. |
+| **Fleet trend** | Does the drift hold across all 100 engines, not just the four? Figure 2 averages the fleet as the remaining flights count down. |
 | **Model input** | Turns the table into the model's exam paper: one row per cycle, 14 sensors as features, RUL as the target, 20 engines held back for testing. |
 | **Baseline model** | Can a straight line through the sensors beat the dumb guess? Turns the 14 sensors into 42 numbers, fits them on the visible engines of both subsets, and scores the hidden fifth: FD001 44.8 against 71.0, FD002 41.0 against 69.8. |
 | **Score on the real test set** | How does it do on the official quiz? One prediction per test engine, from its last recorded cycle: FD001 28.3 against 51.8, FD002 33.5 against 59.8, with the like-for-like numbers beside them. |

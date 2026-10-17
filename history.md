@@ -2,6 +2,19 @@
 
 Newest first. One entry per version.
 
+## 1.5.1 — 2026-10-18 — Label the figures
+
+- A **Sensor guide** opens the notebook: all 21 sensors with symbol, what each
+  one measures, unit and whether FD001 keeps it, taken from Table 2 of the 2008
+  paper that introduced the data. Four of the 21 are marked "not stated" because
+  the paper writes only `--`.
+- Every figure now says what it shows in plain words: panel titles name the
+  sensor and what it measures, axes carry units and read in flights rather than
+  cycles, and each subtitle explains the encodings (faint = raw reading, bold =
+  15-flight average, dash and tag = engine, line and band = fleet mean and middle
+  half, above the diagonal = optimistic).
+- No number, calculation or result changed.
+
 ## 1.5 — 2026-10-17 — Remove the look-ahead
 
 - Review found a forward leak: the 20-cycle mean was centred, so every row used
