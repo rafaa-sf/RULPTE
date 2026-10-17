@@ -15,6 +15,9 @@ Newest first. One entry per version.
   on held-out engines cut at random cycles (35.8 against 39.6 on FD001, 37.7
   against 39.8 on FD002), never on the test score, so that 30.2 was one
   favourable draw of 100 engines rather than a better model.
+- Every prediction now carries a nominal 80% interval, calibrated on held-out
+  engines cut early: ±42.7 cycles on FD001, ±48.4 on FD002, covering 71% and 83%
+  of the official answers. The shortfall is printed, not tuned away.
 - All three figures share one design language: colour means drift direction, grey
   is context, and the dash pattern identifies the engine.
 

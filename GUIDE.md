@@ -102,6 +102,7 @@ question.
 | **Model input** | Turns the table into the model's exam paper: one row per cycle, 14 sensors as features, RUL as the target, 20 engines held back for testing. |
 | **Baseline model** | Can a straight line through the sensors beat the dumb guess? Turns the 14 sensors into 42 numbers, fits them on the visible engines of both subsets, and scores the hidden fifth: FD001 42.1 against 71.0, FD002 38.8 against 69.8. |
 | **Score on the real test set** | How does it do on the official quiz? One prediction per test engine, from its last recorded cycle: FD001 35.6 against 51.8, FD002 35.0 against 59.8, with the like-for-like numbers beside them. |
+| **How sure is it?** | How wide is the band around a prediction? A nominal 80% interval, sized on held-out engines cut early: ±42.7 cycles on FD001, ±48.4 on FD002, covering 71% and 83% of the real answers. |
 | **Where the model fails** | Which mistakes does a single number hide? Figure 3 plots guess against truth and error against truth, so the mid-life optimism is visible. |
 | **Conclusions** | What did we learn? Fourteen sensors carry the signal, the baseline beats the average guess on both subsets, and it is optimistic by about 16 cycles. |
 
@@ -180,6 +181,12 @@ was made on a harder test: cut every hidden engine at a random point in its life
 exactly as the quiz does, and score that. There the 42 numbers win, **35.8
 against 39.6** on FD001 and **37.7 against 39.8** on FD002. The quiz is a single
 draw of 100 engines; the random-cut test never touches it.
+
+**How sure is it?** A single number hides how much to trust it, so each prediction
+carries a band: a nominal 80% interval, ±42.7 cycles on FD001 and ±48.4 on FD002,
+sized from engines cut early rather than from the answers. Measured on the real
+answers it covers 71% and 83%, and that FD001 gap is left visible on purpose: a
+band that quietly widens until it fits would tell you nothing.
 
 **What it gets wrong.** On FD002 the model says 97.3 when the truth is 81.2 —
 about 16 cycles too optimistic (about 27 on FD001). The lean is not flat: it is

@@ -110,6 +110,13 @@ The features were chosen on held-out engines cut at a random cycle, which is the
 condition the test set poses, and never on the test score itself: 35.8 against
 39.6 cycles on FD001, 37.7 against 39.8 on FD002.
 
+Each prediction also carries a nominal 80% interval, sized from held-out engines
+cut early: **±42.7 cycles** on FD001 and **±48.4** on FD002. Measured against the
+official answers it covers 71% and 83% of engines. The FD001 shortfall is real —
+the calibration draws are spread over whole lives while FD001's test engines sit
+where the model's optimism peaks — and it is stated in the notebook rather than
+engineered away.
+
 ## What you need
 
 - Python 3.12 or newer (developed on 3.14; the pinned numpy 2.5.4 needs 3.12)
