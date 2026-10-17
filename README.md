@@ -160,8 +160,13 @@ middle:
 | 21 to 60 | `PLAN` | book the maintenance window |
 | above 60 | `MONITOR` | no action yet |
 
-Those thresholds are a demonstration policy, not airworthiness guidance: a real
-fleet needs its own maintenance-interval and dispatch-reliability rules.
+**These four bands are an illustration, not a maintenance recommendation.** The
+model's error on this simulated data is roughly 28 to 38 flights, so a lower
+bound of 5 flights is not a five-flight guarantee — an engine can sit in
+`MONITOR` and still fail first. Nothing here is airworthiness guidance: a real
+fleet needs its own maintenance-interval, dispatch-reliability and inspection
+rules, and a model proven on that fleet's own data.
+
 `model.npz` is a build artefact (about 9 kB, not committed) and
 `python predict.py train` recreates it.
 

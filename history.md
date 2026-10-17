@@ -21,12 +21,20 @@ Newest first. One entry per version.
   the next ten cycles — information a running engine does not have. It is now the
   trailing mean, and the per-condition normalisation is fitted on the training
   engines only, never on the held-out ones.
-- Every number moved, because the old ones were optimistic. FD001 test 35.6 →
-  28.3 cycles, FD002 35.0 → 33.5; intervals ±45.9 / ±49.8 covering 85% and 84%;
-  cross-validation 41.5 ± 2.2 / 41.0 ± 2.4.
+- Every number moved, and not all in the same direction: cross-validation got
+  worse because the old scores were optimistic, and the official test scores got
+  better (FD001 35.6 → 28.3, FD002 35.0 → 33.5), for the reason in the last bullet.
+  Intervals are now ±45.9 / ±49.8, covering 85% and 84%; cross-validation
+  41.5 ± 2.2 / 41.0 ± 2.4.
 - The honesty of the middle: the 42 features buy only about one cycle over the 14
   raw sensors (38.6 against 39.6 random-cut), and the model's optimism now runs
   from +2 near failure to about +30 in mid-life, turning negative past 140.
+- The two directions are the same fix seen from two sides: the centred window let
+  an ordinary flight borrow ten flights from its own future, which made
+  cross-validation look 2.6 cycles better than it was (38.9 → 41.5), while at an
+  engine's last recorded flight there is no future to borrow, so that window
+  averaged 11 flights instead of 20 and distorted the one row the test set scores
+  (35.6 → 28.3 once the feature stopped looking forward).
 
 ## 1.4 — 2026-10-17 — From number to decision
 
@@ -41,9 +49,10 @@ Newest first. One entry per version.
 ## 1.3 — 2026-10-17 — How stable, and how it compares
 
 - Repeated grouped cross-validation (5 folds by engine, 5 repeats, a fresh random
-  cut each time) puts the model at 38.9 ± 2.4 cycles on FD001 and 38.5 ± 1.8
-  on FD002, so the 35.6 / 35.0 test scores sit within one spread: differences of
-  a couple of cycles are noise, not progress.
+  cut each time) put the model at 38.9 ± 2.4 cycles on FD001 and 38.5 ± 1.8
+  on FD002, so the 35.6 / 35.0 test scores sat within one spread: differences of
+  a couple of cycles are noise, not progress. (These are the pre-1.5 numbers; the
+  leak fixed in 1.5 flattered them, and it also distorted the test rows.)
 - Error by true life is now printed: worst on the engines with the longest to
   live (54.1 cycles at 150+ on FD001), best close to failure (24.2 at 0-50).
 - README and GUIDE place the result against published work with one citation
@@ -124,5 +133,8 @@ Newest first. One entry per version.
 
 ## Planned
 
-- 1.2 — Optional: a model that corrects the mid-life optimism, and the same
-  study on FD002 (six operating conditions) to show what the baseline loses.
+Nothing below has been started; this is a list of candidates, not a commitment.
+
+- A correction for the mid-life optimism, scored by the same cross-validation.
+- Monitoring and drift: what to check before trusting the model on a new fleet.
+- A deep-learning comparison on FD002 and FD004, where the baseline is weakest.
