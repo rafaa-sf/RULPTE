@@ -179,10 +179,21 @@ with published results.
 
 ## 9. How to run it
 
+One command does everything — creates the environment, installs the libraries,
+downloads the data, opens the notebook:
+
+    python run.py
+
+If you prefer to see each move, the same four steps by hand:
+
 1. `python -m venv .venv` then `.venv\Scripts\activate`
-2. `pip install -r requirements.txt`
+2. `pip install -r requirements.txt notebook`
 3. `python download_data.py`
 4. `python -m notebook`, open `rul_prediction.ipynb`, **Run All**
+
+`python run.py --check` runs the notebook without opening it and prints the two
+RMSEs, which is how the project proves itself on a clean machine every time a
+change is pushed.
 
 The full walkthrough, with copy-paste commands and troubleshooting, is in
 [README.md](README.md).

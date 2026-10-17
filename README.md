@@ -22,7 +22,45 @@ and every figure in plain words, with no maths.
 the error against true life, with the ±RMSE band and the model's slight
 optimism.*
 
-## Quick start (Windows, copy and paste)
+## Quick start (one command)
+
+You need **Python 3.12 or newer** and **Git**. Nothing else — no libraries, no
+data, no editor.
+
+```powershell
+git clone https://github.com/rafaa-sf/RULPTE.git
+cd RULPTE
+python run.py
+```
+
+`run.py` creates its own virtual environment, installs what the notebook needs,
+downloads the NASA data the first time, and opens the notebook in your browser.
+It is safe to run again: every step it has already done is skipped. If the
+browser does not open by itself, copy the `http://127.0.0.1:.../?token=...`
+address it prints into the browser.
+
+No Git? Click **Code → Download ZIP** on the GitHub page, unpack it, open a
+terminal in that folder, and run the same `python run.py`.
+
+Then menu **Kernel → Restart Kernel and Run All Cells**. The three figures
+appear under their cells. `Ctrl+C` twice in the terminal stops the server.
+
+Want the scores without opening anything?
+
+```powershell
+python run.py --check
+```
+
+That runs the notebook headless and prints the two RMSEs, failing loudly if they
+ever change. `python run.py --dry-run` shows the commands without running them.
+
+The same workflow on a clean machine runs on every push in
+[.github/workflows/from-zero.yml](.github/workflows/from-zero.yml), so "works
+from zero" is checked, not claimed.
+
+## Quick start (step by step)
+
+Prefer to see every move? The same thing by hand, one step per section below.
 
 ```powershell
 git clone https://github.com/rafaa-sf/RULPTE.git
@@ -43,6 +81,8 @@ Linux.
 
 ## What you get
 
+- One command, `python run.py`, from a bare clone to the notebook running in
+  your browser: environment, libraries and data all handled.
 - A notebook that loads the data, checks it, plots it and scores a baseline
   model, top to bottom in a few seconds.
 - Three figures: four engines followed from first flight to failure, the
@@ -225,17 +265,26 @@ without any editor.
 ## Project layout
 
 ```
+run.py            one command: set up the environment, fetch data, open the notebook
 rul_prediction.ipynb      the notebook: load, check, label, plot, fit, score
 download_data.py  fetches the NASA archive into data/
 requirements.txt  pinned dependencies
 GUIDE.md          plain-words explanation of every term, file and figure
 LICENSE           MIT
 figures/figure-3.png  the test-engine plot shown at the top of this page
+.github/workflows/from-zero.yml  runs run.py --check on every push
 data/             downloaded data (git ignored)
 history.md        version history, newest first
 ```
 
 ## Troubleshooting
+
+**`python run.py` says Python 3.12 or newer is required** — an older `python`
+answered. Install 3.12+ from [python.org](https://www.python.org/downloads/),
+then run `py -3.12 run.py` on Windows, or `python3.12 run.py` elsewhere.
+
+**`python` is not recognised** — Python is not on `PATH`. On Windows try `py`
+instead of `python`; the rest of the commands are unchanged.
 
 **`No module named notebook`** — the viewer is not installed in the
 environment you are running from. Run `pip install notebook` with the same

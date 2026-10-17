@@ -2,6 +2,18 @@
 
 Newest first. One entry per version.
 
+## 1.1 — 2026-10-17 — One command from clone to results
+
+- `run.py` replaces the five hand-typed steps: it creates `.venv`, installs the
+  pinned libraries plus the notebook viewer, downloads the data on first run,
+  and opens the notebook. Every step is skipped when it is already done.
+- `python run.py --check` runs the notebook headless and fails if the expected
+  scores stop appearing, so the README's promise is testable.
+- GitHub Actions runs exactly that on a clean runner for every push, from a
+  `Python 3.12` image with no libraries preinstalled.
+- The README quick start is three lines now; the step-by-step route stays below
+  it for readers who want to see each move.
+
 ## 1.0 — 2026-10-17 — First release
 
 - The notebook is `rul_prediction.ipynb`: it opens with a "Before you start"
@@ -45,5 +57,5 @@ Newest first. One entry per version.
 
 ## Planned
 
-- 1.1 — Optional: a model that corrects the mid-life optimism, and the same
+- 1.2 — Optional: a model that corrects the mid-life optimism, and the same
   study on FD002 (six operating conditions) to show what the baseline loses.

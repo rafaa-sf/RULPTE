@@ -1,0 +1,26 @@
+name: from zero
+
+# Proves the promise in the README: a machine with nothing but Python 3.12
+# can set the project up and run the notebook, using the same one command a
+# reader uses. It fails if the notebook stops printing its scores.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  setup-and-run:
+    name: run.py --check on a clean runner
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up and run the notebook the way a newcomer would
+        run: python run.py --check
