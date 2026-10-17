@@ -24,7 +24,9 @@ DATA_FILES = tuple(f"{kind}_{s}.txt" for s in ("FD001", "FD002", "FD003", "FD004
 MIN_PYTHON = (3, 12)
 EXPECTED = ("FD001 test RMSE: 35.6 cycles", "FD001 held-out RMSE: 42.1 cycles",
             "FD002 test RMSE: 35.0 cycles", "FD002 held-out RMSE: 38.8 cycles",
-            "FD001 80% interval: ±42.7 cycles", "FD002 coverage on the test engines: 83%")
+            "FD001 80% interval: ±42.7 cycles", "FD002 coverage on the test engines: 83%",
+            "FD001 repeated grouped CV: 38.9 ± 2.4 cycles",
+            "FD002 repeated grouped CV: 38.5 ± 1.8 cycles")
 
 
 def venv_python():

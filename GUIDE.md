@@ -188,6 +188,17 @@ sized from engines cut early rather than from the answers. Measured on the real
 answers it covers 71% and 83%, and that FD001 gap is left visible on purpose: a
 band that quietly widens until it fits would tell you nothing.
 
+**How stable is it?** The 35-ish number is one draw of engines, so the notebook
+repeats the whole exercise five times with different engines held back and
+different cut points: 38.9 ± 2.4 on FD001, 38.5 ± 1.8 on FD002. Two models
+whose scores differ by a cycle or two are not different; the band around the
+number is as real as the number.
+
+**Is it any good?** Against published work, no, not yet: deep sequence models
+read the whole history and report about 12 cycles of error on FD001 against this
+model's 35.6. That is the point of calling this a floor - it is the number any
+cleverer model has to beat, produced by a formula you can read in ten lines.
+
 **What it gets wrong.** On FD002 the model says 97.3 when the truth is 81.2 —
 about 16 cycles too optimistic (about 27 on FD001). The lean is not flat: it is
 worst in mid-life, around +40 cycles with roughly 70 left, and turns slightly

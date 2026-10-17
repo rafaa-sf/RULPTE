@@ -117,6 +117,24 @@ the calibration draws are spread over whole lives while FD001's test engines sit
 where the model's optimism peaks — and it is stated in the notebook rather than
 engineered away.
 
+How much of that is luck? Repeating the held-out split five times with a fresh
+random cut each time gives **38.9 ± 2.4 cycles** on FD001 and **38.5 ± 1.8** on
+FD002, so the test row above sits inside one spread: a few cycles of difference
+between two models is noise. The regime line says where the error lives — on
+FD001, 24.2 cycles when the engine is close to failure, 54.1 when it still has
+more than 150 to go.
+
+### Where this sits against published models
+
+This model is deliberately a floor: least squares on 42 hand-built features, no
+sequence model, no recurrent network. Sequence models trained on whole windows
+report much lower errors on the same data — an attention-LSTM published by
+[Dida et al., IJPHM 2025](https://doi.org/10.36001/ijphm.2025.v16i2.4274)
+reaches RMSE 12.33 on FD001 and 11.76 on FD003, against this project's 35.6 on
+FD001. That gap is the price of keeping the model readable in ten lines of
+numpy; it is not a claim of parity. Published numbers also differ in RUL
+capping and clipping, so compare magnitudes, not decimals.
+engineered away.
 ## What you need
 
 - Python 3.12 or newer (developed on 3.14; the pinned numpy 2.5.4 needs 3.12)

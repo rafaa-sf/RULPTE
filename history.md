@@ -2,6 +2,18 @@
 
 Newest first. One entry per version.
 
+## 1.3 — 2026-10-17 — How stable, and how it compares
+
+- Repeated grouped cross-validation (5 folds by engine, 5 repeats, a fresh random
+  cut each time) puts the model at 38.9 ± 2.4 cycles on FD001 and 38.5 ± 1.8
+  on FD002, so the 35.6 / 35.0 test scores sit within one spread: differences of
+  a couple of cycles are noise, not progress.
+- Error by true life is now printed: worst on the engines with the longest to
+  live (54.1 cycles at 150+ on FD001), best close to failure (24.2 at 0-50).
+- README and GUIDE place the result against published work with one citation
+  (attention-LSTM, 12.33 on FD001) and say plainly that this is a floor, not
+  parity.
+
 ## 1.2 — 2026-10-17 — Hard subset, real features
 
 - The data layer now spans all four subsets: FD001 and FD003 fly in one operating
