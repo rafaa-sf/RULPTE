@@ -165,7 +165,7 @@ fleet needs its own maintenance-interval and dispatch-reliability rules.
 `model.npz` is a build artefact (about 9 kB, not committed) and
 `python predict.py train` recreates it.
 
-`python run.py --test` trains the model and runs the test suite: four checks that the tool
+`python run.py --test` trains the model and runs the test suite: five checks that the tool
 reproduces the notebook's 28.3 and 33.5 and that the four bands map to the four
 actions. Continuous integration runs both that and `--check` on every push.
 

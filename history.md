@@ -22,8 +22,8 @@ Newest first. One entry per version.
   counted into those four bands.
 - `predict.py` is the tool: `train` writes a 9 kB `model.npz`, `predict` answers
   for any C-MAPSS file, `score` reproduces the published numbers.
-- Four pytest checks keep the tool and the notebook in agreement, and CI now
-  runs both `run.py --check` and `run.py --test` on every push.
+- Pytest checks keep the tool and the notebook in agreement, and CI now runs
+  both `run.py --check` and `run.py --test` on every push.
 
 ## 1.3 — 2026-10-17 — How stable, and how it compares
 
