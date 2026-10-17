@@ -5,15 +5,16 @@ labels every recorded cycle with its remaining useful life (RUL) and fits a
 deliberately simple baseline that predicts how many cycles an engine has left. It
 runs on all four subsets, including the two with six flight conditions.
 
-> **Test RMSE 35.0 cycles on FD002**, against 59.8 for always guessing the fleet
+> **Test RMSE 33.5 cycles on FD002**, against 59.8 for always guessing the fleet
 > average. FD002 is the hard one: 260 training engines, six operating conditions,
-> 259 test engines. FD001, the textbook single-condition set, scores 35.6
+> 259 test engines. FD001, the textbook single-condition set, scores 28.3
 > against 51.8.
 
 The model is plain least squares on the 14 live sensors expanded to 42 features
-(current value, 20-cycle mean, 20-cycle change), with every sensor standardised
-inside its own flight condition. No deep learning, so the numbers are a floor,
-not a ceiling.
+(current value, trailing 20-cycle mean, 20-cycle change), with every sensor
+standardised inside its own flight condition. Every feature looks backwards, so
+the same numbers can be computed on an engine that is running right now. No deep
+learning, so these are a floor, not a ceiling.
 
 New to the vocabulary? **[GUIDE.md](GUIDE.md)** explains every term, every file
 and every figure in plain words, with no maths.
@@ -98,31 +99,31 @@ All figures are RMSE in cycles. Lower is better.
 
 | What is scored | FD001 | always guessing | FD002 | always guessing |
 | --- | --- | --- | --- | --- |
-| 20% of engines held out, every cycle | 42.1 | 71.0 | 38.8 | 69.8 |
-| Same held-out engines, only cycles in the test's life range | 25.8 | 54.1 | 31.2 | 54.7 |
-| Official test: one prediction per engine at its last recorded cycle | 35.6 | 51.8 | 35.0 | 59.8 |
+| 20% of engines held out, every cycle | 44.8 | 71.0 | 41.0 | 69.8 |
+| Same held-out engines, only cycles in the test's life range | 27.6 | 54.1 | 32.6 | 56.5 |
+| Official test: one prediction per engine at its last recorded cycle | 28.3 | 51.8 | 33.5 | 59.8 |
 
 Only the last row is the official score. The rows above are the honest checks
 around it: the first includes young engines with 300 cycles left, the second is
 scored the way the test set is scored.
 
 The features were chosen on held-out engines cut at a random cycle, which is the
-condition the test set poses, and never on the test score itself: 35.8 against
-39.6 cycles on FD001, 37.7 against 39.8 on FD002.
+condition the test set poses, and never on the test score itself: 38.6 against
+39.6 cycles on FD001, 39.4 against 39.8 on FD002. That gain is about one cycle,
+inside the spread below, and the README says so rather than selling it.
 
-Each prediction also carries a nominal 80% interval, sized from held-out engines
-cut early: **±42.7 cycles** on FD001 and **±48.4** on FD002. Measured against the
-official answers it covers 71% and 83% of engines. The FD001 shortfall is real —
-the calibration draws are spread over whole lives while FD001's test engines sit
-where the model's optimism peaks — and it is stated in the notebook rather than
-engineered away.
+Each prediction also carries a nominal 80% interval, sized on held-out engines
+cut at an arbitrary cycle: **±45.9 cycles** on FD001 and **±49.9** on FD002. It
+covers 85% of the official answers on both subsets: wider than promised, which is
+the honest direction, because the model's mistakes are not symmetric. The width
+rests on 20 engines and 25 draws, so it is coarse by a few cycles.
 
 How much of that is luck? Repeating the held-out split five times with a fresh
-random cut each time gives **38.9 ± 2.4 cycles** on FD001 and **38.5 ± 1.8** on
-FD002, so the test row above sits inside one spread: a few cycles of difference
-between two models is noise. The regime line says where the error lives — on
-FD001, 24.2 cycles when the engine is close to failure, 54.1 when it still has
-more than 150 to go.
+random cut each time gives **41.5 ± 2.2 cycles** on FD001 and **41.0 ± 2.4** on
+FD002. The official test row is better than these, because the test engines are
+scored once at their last cycle rather than across their whole lives — which is
+why the like-for-like row exists above. The regime line says where the error
+lives: on FD001, 28.1 cycles close to failure and 57.3 with more than 150 to go.
 
 ### Where this sits against published models
 
@@ -130,7 +131,7 @@ This model is deliberately a floor: least squares on 42 hand-built features, no
 sequence model, no recurrent network. Sequence models trained on whole windows
 report much lower errors on the same data — an attention-LSTM published by
 [Dida et al., IJPHM 2025](https://doi.org/10.36001/ijphm.2025.v16i2.4274)
-reaches RMSE 12.33 on FD001 and 11.76 on FD003, against this project's 35.6 on
+reaches RMSE 12.33 on FD001 and 11.76 on FD003, against this project's 28.3 on
 FD001. That gap is the price of keeping the model readable in ten lines of
 numpy; it is not a claim of parity. Published numbers also differ in RUL
 capping and clipping, so compare magnitudes, not decimals.
@@ -164,7 +165,7 @@ fleet needs its own maintenance-interval and dispatch-reliability rules.
 `python predict.py train` recreates it.
 
 `python run.py --test` runs the test suite: seven checks that the tool
-reproduces the notebook's 35.6 and 35.0 and that the four bands map to the four
+reproduces the notebook's 28.3 and 33.5 and that the four bands map to the four
 actions. Continuous integration runs both that and `--check` on every push.
 
 ## What you need
@@ -296,9 +297,9 @@ read-only: it creates no files.
   (current value, 20-cycle mean, 20-cycle change), RUL is the target, and one
   engine in five is held back and never seen while fitting. Both subsets score
   in the results table above.
-- Figure 3: FD002's test engines. The model leans about 16 cycles high, and that
-  lean is not flat — it is worst on engines with roughly 70 cycles left, and
-  turns negative for engines still above about 150 cycles.
+- Figure 3: FD002's test engines. The model leans about 11 cycles high, and that
+  lean is not flat — it is near zero for a dying engine, peaks near +30 with 40 to
+  80 cycles left, and turns negative above about 140.
 - Nothing is written to disk. The notebook only reads the data and draws.
 
 ## Reading it without the code

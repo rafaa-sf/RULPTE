@@ -100,13 +100,13 @@ question.
 | **Degradation by engine** | Do the surviving sensors really drift as an engine ages? Figure 1 shows four engines of different lengths, one panel per strong sensor. |
 | **Fleet trend** | Does the drift hold across all 100 engines, not just the four? Figure 2 averages the fleet as RUL counts down. |
 | **Model input** | Turns the table into the model's exam paper: one row per cycle, 14 sensors as features, RUL as the target, 20 engines held back for testing. |
-| **Baseline model** | Can a straight line through the sensors beat the dumb guess? Turns the 14 sensors into 42 numbers, fits them on the visible engines of both subsets, and scores the hidden fifth: FD001 42.1 against 71.0, FD002 38.8 against 69.8. |
-| **Score on the real test set** | How does it do on the official quiz? One prediction per test engine, from its last recorded cycle: FD001 35.6 against 51.8, FD002 35.0 against 59.8, with the like-for-like numbers beside them. |
-| **How sure is it?** | How wide is the band around a prediction? A nominal 80% interval, sized on held-out engines cut early: ±42.7 cycles on FD001, ±48.4 on FD002, covering 71% and 83% of the real answers. |
+| **Baseline model** | Can a straight line through the sensors beat the dumb guess? Turns the 14 sensors into 42 numbers, fits them on the visible engines of both subsets, and scores the hidden fifth: FD001 44.8 against 71.0, FD002 41.0 against 69.8. |
+| **Score on the real test set** | How does it do on the official quiz? One prediction per test engine, from its last recorded cycle: FD001 28.3 against 51.8, FD002 33.5 against 59.8, with the like-for-like numbers beside them. |
+| **How sure is it?** | How wide is the band around a prediction? A nominal 80% interval, sized on held-out engines cut at an arbitrary cycle: ±45.9 cycles on FD001, ±49.9 on FD002, covering 85% of the real answers on both. |
 | **Where the model fails** | Which mistakes does a single number hide? Figure 3 plots guess against truth and error against truth, so the mid-life optimism is visible. |
-| **How stable is that number?** | Is 35 one lucky draw? Five folds, five repeats, a fresh random cut each time: 38.9 ± 2.4 cycles on FD001, 38.5 ± 1.8 on FD002, and the error split by how much life is left. |
+| **How stable is that number?** | Is the score one lucky draw? Five folds, five repeats, a fresh random cut each time: 41.5 ± 2.2 cycles on FD001, 41.0 ± 2.4 on FD002, and the error split by how much life is left. |
 | **What to do with the number** | A life estimate is only useful if it changes what someone does: the pessimistic end of the interval becomes GROUND, INSPECT, PLAN or MONITOR, and the 259 FD002 test engines are counted into those bands. |
-| **Conclusions** | What did we learn? Fourteen sensors carry the signal, the baseline beats the average guess on both subsets, and it is optimistic by about 16 cycles. |
+| **Conclusions** | What did we learn? Fourteen sensors carry the signal, the baseline beats the average guess on both subsets, and it is optimistic by about 11 cycles. |
 
 Nothing is written to disk. The notebook reads the data and draws pictures.
 
@@ -162,61 +162,65 @@ it proves nothing.
 
 **The yardstick.** "Every engine has about the fleet average left" is the dumbest
 possible guess and is scored the same way. Our model has to beat it to mean
-anything. On the hidden engines it scores **42.1** on FD001 (average guess 71.0)
-and **38.8** on FD002 (69.8), so the sensors do carry real information.
+anything. On the hidden engines it scores **44.8** on FD001 (average guess 71.0)
+and **41.0** on FD002 (69.8), so the sensors do carry real information.
 
 **A fair comparison.** Those numbers average every cycle of the hidden engines,
 young ones with 300 cycles left included; the real quiz has one row per engine,
-near the end of life. Restricted to the quiz's life range: **25.8** against 54.1
-on FD001, **31.2** against 54.7 on FD002. Compare like with like.
+near the end of life. Restricted to the quiz's life range: **27.6** against 54.1
+on FD001, **32.6** against 56.5 on FD002. Compare like with like.
 
 **The real quiz.** The official test sets are engines we never used, each recorded
 only up to some point in its life. The model predicts once per engine from its
-last recorded cycle: **35.6** against 51.8 on FD001's 100 engines, and **35.0**
+last recorded cycle: **28.3** against 51.8 on FD001's 100 engines, and **33.5**
 against 59.8 on FD002's 259. FD002 is the headline because it is harder: six
 conditions and 260 training engines.
 
-**Why FD001 was easier before.** The first version used the 14 raw readings and
-scored 30.2 on FD001's quiz. That version was not shipped, and the choice between
-the two was not made on the quiz — that would be marking your own homework. It
-was made on a harder test: cut every hidden engine at a random point in its life,
-exactly as the quiz does, and score that. There the 42 numbers win, **35.8
-against 39.6** on FD001 and **37.7 against 39.8** on FD002. The quiz is a single
-draw of 100 engines; the random-cut test never touches it.
+**Why the sensors are expanded at all.** The plain 14 readings are the simpler
+model, so the extra 28 numbers have to pay for themselves. The choice was not made
+on the quiz — that would be marking your own homework. It was made on a harder
+test: cut every hidden engine at a random point in its life, exactly as the quiz
+does, and score that. There the 42 numbers win by about one cycle, **38.6 against
+39.6** on FD001 and **39.4 against 39.8** on FD002 — a small, honest gain, inside
+the spread. The quiz is a single draw of engines; the random-cut test never
+touches it.
 
 **How sure is it?** A single number hides how much to trust it, so each prediction
-carries a band: a nominal 80% interval, ±42.7 cycles on FD001 and ±48.4 on FD002,
-sized from engines cut early rather than from the answers. Measured on the real
-answers it covers 71% and 83%, and that FD001 gap is left visible on purpose: a
-band that quietly widens until it fits would tell you nothing.
+carries a band: a nominal 80% interval, ±45.9 cycles on FD001 and ±49.9 on FD002,
+sized from engines cut at an arbitrary cycle rather than from the answers.
+Measured on the real answers it covers 85% on both — wider than promised, which is
+the safe direction, because the model's mistakes are lopsided rather than spread
+evenly. The width rests on 20 engines and 25 draws, so it is coarse by a few
+cycles.
 
 **How stable is it?** The 35-ish number is one draw of engines, so the notebook
 repeats the whole exercise five times with different engines held back and
-different cut points: 38.9 ± 2.4 on FD001, 38.5 ± 1.8 on FD002. Two models
-whose scores differ by a cycle or two are not different; the band around the
-number is as real as the number.
+different cut points: 41.5 ± 2.2 on FD001, 41.0 ± 2.4 on FD002. The official quiz
+beats both, because it scores each engine once at its last cycle instead of across
+its whole life. Two models whose scores differ by a cycle or two are not
+different; the band around the number is as real as the number.
 
 **What the number is for.** A life estimate only earns its keep if it changes
 what someone does next, so the last section reads the pessimistic end of the
 interval and turns it into an action: 5 cycles or fewer means ground the engine,
 up to 20 inspect it before the next flight, up to 60 book the maintenance
 window, more than that and there is nothing to do yet. On FD002's 259 test
-engines that grounds 60, inspects 16, plans 54 and monitors the remaining 129.
+engines that grounds 66, inspects 16, plans 60 and monitors the remaining 117.
 `predict.py` applies the same four bands to any engine file you point it at, and
 `python run.py --test` checks that the tool and the notebook still agree.
 
 
 **Is it any good?** Against published work, no, not yet: deep sequence models
 read the whole history and report about 12 cycles of error on FD001 against this
-model's 35.6. That is the point of calling this a floor - it is the number any
+model's 28.3. That is the point of calling this a floor - it is the number any
 cleverer model has to beat, produced by a formula you can read in ten lines.
 
-**What it gets wrong.** On FD002 the model says 97.3 when the truth is 81.2 —
-about 16 cycles too optimistic (about 27 on FD001). The lean is not flat: it is
-worst in mid-life, around +40 cycles with roughly 70 left, and turns slightly
-negative above about 150 cycles. That is why the third figure shows the error,
-not just the score. A model you cannot see the mistakes of is a model you cannot
-improve.
+**What it gets wrong.** On FD002 the model says 92.1 when the truth is 81.2 —
+about 11 cycles too optimistic (about 18 on FD001). The lean is not flat: it is
+nearly zero for a dying engine, peaks near +30 with 40 to 80 cycles left, and
+turns negative beyond about 140, reaching −56 for the longest-lived engines. That
+is why the third figure shows the error, not just the score. A model you cannot
+see the mistakes of is a model you cannot improve.
 
 ---
 

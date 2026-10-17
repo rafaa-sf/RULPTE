@@ -2,6 +2,19 @@
 
 Newest first. One entry per version.
 
+## 1.5 — 2026-10-17 — Remove the look-ahead
+
+- Review found a forward leak: the 20-cycle mean was centred, so every row used
+  the next ten cycles — information a running engine does not have. It is now the
+  trailing mean, and the per-condition normalisation is fitted on the training
+  engines only, never on the held-out ones.
+- Every number moved, because the old ones were optimistic. FD001 test 35.6 →
+  28.3 cycles, FD002 35.0 → 33.5; intervals ±45.9 / ±49.9 with 85% coverage on
+  both; cross-validation 41.5 ± 2.2 / 41.0 ± 2.4.
+- The honesty of the middle: the 42 features buy only about one cycle over the 14
+  raw sensors (38.6 against 39.6 random-cut), and the model's optimism now runs
+  from +2 near failure to about +30 in mid-life, turning negative past 140.
+
 ## 1.4 — 2026-10-17 — From number to decision
 
 - The notebook ends by turning the pessimistic end of the interval into an

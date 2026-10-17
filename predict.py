@@ -29,17 +29,22 @@ def read_frame(path):
         sys.exit(f"no such file: {path}")
     return pd.read_csv(path, sep=r"\s+", header=None, names=COLS)
 
-def load_subset(name):
-    """Train/test frames z-scored inside their operating condition, plus the condition stats."""
+def load_subset(name, fit_units=None):
+    """Train/test frames z-scored inside their operating condition, plus the condition stats.
+
+    fit_units: the mean/std come from those training engines only, so a held-out engine never
+    reaches the preprocessing."""
     if name not in CONDITIONS:
         sys.exit(f"unknown subset {name}; choose from {', '.join(CONDITIONS)}")
     train, test = read_frame(DATA / f"train_{name}.txt"), read_frame(DATA / f"test_{name}.txt")
     rul = pd.read_csv(DATA / f"RUL_{name}.txt", header=None, names=["RUL"]).squeeze()
 
+    # the k-means keeps every training engine: it clusters settings, unsupervised, and never sees RUL
     km = KMeans(n_clusters=CONDITIONS[name], n_init=10, random_state=0).fit(train[SETTINGS].to_numpy(float))
     train["condition"], test["condition"] = km.labels_, km.predict(test[SETTINGS].to_numpy(float))
-    mean = train.groupby("condition")[SENSORS].mean()
-    std = train.groupby("condition")[SENSORS].std().mask(lambda s: s <= FLAT, 1.0)
+    fit_rows = train if fit_units is None else train[train["unit"].isin(fit_units)]
+    mean = fit_rows.groupby("condition")[SENSORS].mean()
+    std = fit_rows.groupby("condition")[SENSORS].std().mask(lambda s: s <= FLAT, 1.0)
     for frame in (train, test):  # train statistics only; labels 0..k-1 row them onto every reading
         labels = frame["condition"].to_numpy()
         frame[SENSORS] = (frame[SENSORS].to_numpy(float) - mean.to_numpy()[labels]) / std.to_numpy()[labels]
@@ -49,10 +54,10 @@ def load_subset(name):
                               "cond_std": std.to_numpy()}
 
 def features(frame):
-    """Per engine, sorted by cycle: value, 20-cycle centred mean, 20-cycle change."""
+    """Per engine, sorted by cycle: value, 20-cycle trailing mean, 20-cycle change."""
     d = frame.sort_values(["unit", "cycle"])
     by = d.groupby("unit")[KEEP]
-    avg = by.transform(lambda s: s.rolling(WIN, center=True, min_periods=1).mean())
+    avg = by.transform(lambda s: s.rolling(WIN, min_periods=1).mean())  # trailing only
     # early rows have no t-WIN reading, so they use the engine's first one: no NaN, no dropped rows
     change = d[KEEP] - by.shift(WIN).fillna(by.transform("first"))
     out = pd.concat([d[KEEP], avg.add_suffix(f"_avg{WIN}"), change.add_suffix(f"_d{WIN}")], axis=1)
@@ -60,17 +65,18 @@ def features(frame):
 
 def fit(name):
     """Least squares on four of five engines; the fifth supplies the 80% half-width."""
-    frame, test, rul, norm = load_subset(name)
+    units = np.sort(read_frame(DATA / f"train_{name}.txt")["unit"].unique())
+    held_units = units[::5]
+    frame, test, rul, norm = load_subset(name, fit_units=np.setdiff1d(units, held_units))
     X, y = features(frame).to_numpy(float), frame["RUL"].to_numpy(float)
-    held_units = np.sort(frame["unit"].unique())[::5]
     held = frame["unit"].isin(held_units).to_numpy()
     mean, std = X[~held].mean(axis=0), X[~held].std(axis=0)
     A = np.column_stack([np.ones(len(X)), (X - mean) / std])
     coef = np.linalg.lstsq(A[~held], y[~held], rcond=None)[0]
 
     F = pd.DataFrame(X, columns=FEATURES).assign(unit=frame["unit"].to_numpy(), RUL=y)
-    rng, error = np.random.default_rng(0), []
-    for _ in range(25):  # 25 random cuts, one per held-out engine, the notebook's seed
+    rng, error = np.random.default_rng(1), []
+    for _ in range(25):  # 25 random cuts, one per held-out engine; seed 1 is the notebook's interval draw
         engines = [F[F["unit"] == u] for u in held_units]
         cut = pd.DataFrame([r.iloc[rng.integers(5, len(r))] for r in engines])
         B = np.column_stack([np.ones(len(cut)), (cut[FEATURES].to_numpy(float) - mean) / std])
@@ -87,36 +93,36 @@ def fit(name):
 
 def train():
     arrays = {}
-    for name in ("FD001", "FD002"):
+    for name in CONDITIONS:  # all four subsets, or `predict --subset FD004` has nothing to load
         model = fit(name)
         arrays.update({f"{name}_{key}": value for key, value in model.items()})
         print(f"trained {name}: 42 features, {model['engines']} engines, interval ±{model['half']:.1f} cycles")
     np.savez_compressed(MODEL, **arrays)
 
+def forecast(frame, model):
+    """RUL at each engine's last recorded cycle, from a fitted model dict."""
+    centres = model["centre"]
+    labels = np.argmin(((frame[SETTINGS].to_numpy(float)[:, None, :] - centres) ** 2).sum(axis=2), axis=1)
+    frame[SENSORS] = ((frame[SENSORS].to_numpy(float) - model["cond_mean"][labels]) /
+                      model["cond_std"][labels])  # same condition z-score as training
+    rows = frame.groupby("unit")["cycle"].idxmax()
+    X = features(frame).loc[rows].to_numpy(float)
+    rul = np.clip(np.column_stack([np.ones(len(X)), (X - model["mean"]) / model["std"]]) @ model["coef"], 0, None)
+    return frame.loc[rows, "unit"].to_numpy(), rul
+
 def predict(subset, path):
     if not MODEL.is_file():
         sys.exit(f"{MODEL.name} not found; run: python predict.py train")
-    model = np.load(MODEL)
-    if f"{subset}_coef" not in model:
+    npz = np.load(MODEL)
+    if f"{subset}_coef" not in npz:
         sys.exit(f"{subset} is not in {MODEL.name}; train it first")
+    model = {key.removeprefix(f"{subset}_"): npz[key] for key in npz.files if key.startswith(f"{subset}_")}
 
-    frame = read_frame(path)
-    centres = model[f"{subset}_centre"]
-    labels = np.argmin(((frame[SETTINGS].to_numpy(float)[:, None, :] - centres) ** 2).sum(axis=2), axis=1)
-    frame[SENSORS] = ((frame[SENSORS].to_numpy(float) - model[f"{subset}_cond_mean"][labels]) /
-                      model[f"{subset}_cond_std"][labels])  # same condition z-score as training
-
-    rows = frame.groupby("unit")["cycle"].idxmax()
-    X = features(frame).loc[rows].to_numpy(float)
-    half = float(model[f"{subset}_half"])
-    rul = np.clip(np.column_stack([np.ones(len(X)), (X - model[f"{subset}_mean"]) / model[f"{subset}_std"]])
-                  @ model[f"{subset}_coef"], 0, None)
-    units = frame.loc[rows, "unit"].to_numpy()
-    for unit, value in list(zip(units, rul))[:100]:
-        low = int(max(0.0, value - half))
-        print(f"engine {unit}  RUL {int(value)}  p10 {low}  p90 {int(value + half)}  {action(low)}")
-    if len(units) > 100:
-        print(f"note: showing 100 of {len(units)} engines")
+    units, rul = forecast(read_frame(path), model)
+    half = float(model["half"])
+    for unit, value in zip(units, rul):
+        low = max(0.0, value - half)  # the policy reads the raw lower bound, not the printed integer
+        print(f"engine {unit}  RUL {int(value)}  p10 {int(low)}  p90 {int(value + half)}  {action(low)}")
 
 def score(subset):
     model = fit(subset)
@@ -127,12 +133,12 @@ def score(subset):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
-    commands.add_parser("train", help="fit FD001 and FD002, write model.npz")
+    commands.add_parser("train", help="fit all four subsets, write model.npz")
     one = commands.add_parser("predict", help="RUL and action for every engine in a test file")
-    one.add_argument("--subset", default="FD002", help="FD001 or FD002 (default FD002)")
+    one.add_argument("--subset", default="FD002", help="FD001-FD004 (default FD002)")
     one.add_argument("--file", help="any C-MAPSS format test file")
     other = commands.add_parser("score", help="reproduced test RMSE, interval and coverage")
-    other.add_argument("--subset", default="FD001", help="FD001 or FD002 (default FD001)")
+    other.add_argument("--subset", default="FD001", help="FD001-FD004 (default FD001)")
     args = parser.parse_args()
 
     if args.command == "train":

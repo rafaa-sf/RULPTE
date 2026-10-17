@@ -20,6 +20,7 @@ model.npz
 __pycache__/
 *.py[cod]
 .pytest_cache/
+pytest-cache-files-*/
 
 # Virtual environment (a venv also writes its own .gitignore with "*")
 .venv/
