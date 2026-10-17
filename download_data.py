@@ -1,4 +1,4 @@
-"""Download the NASA C-MAPSS turbofan FD001 files into the data/ folder.
+"""Download the NASA C-MAPSS turbofan FD001, FD002, FD003 and FD004 files.
 
 Standard library only (no extra installs). Run from the project folder:
 
@@ -20,13 +20,23 @@ URL = (
     "6.+Turbofan+Engine+Degradation+Simulation+Data+Set.zip"
 )
 DATA_DIR = Path(__file__).resolve().parent / "data"
-REQUIRED = ["train_FD001.txt", "test_FD001.txt", "RUL_FD001.txt"]
+SUBSETS = ("FD001", "FD002", "FD003", "FD004")
+REQUIRED = [f"{kind}_{s}.txt" for s in SUBSETS for kind in ("train", "test", "RUL")]
 OPTIONAL = ["readme.txt"]
-# file -> (expected rows, expected engines); None = not checked
+# file -> (expected rows, expected engines); None = not checked (RUL has one column)
 EXPECTED = {
     "train_FD001.txt": (20631, 100),
     "test_FD001.txt": (13096, 100),
     "RUL_FD001.txt": (100, None),
+    "train_FD002.txt": (53759, 260),
+    "test_FD002.txt": (33991, 259),
+    "RUL_FD002.txt": (259, None),
+    "train_FD003.txt": (24720, 100),
+    "test_FD003.txt": (16596, 100),
+    "RUL_FD003.txt": (100, None),
+    "train_FD004.txt": (61249, 249),
+    "test_FD004.txt": (41214, 248),
+    "RUL_FD004.txt": (248, None),
 }
 
 MANUAL_HELP = f"""
@@ -36,6 +46,7 @@ Automatic download failed. Download it by hand instead:
   2. Download the zip and unzip it.
   3. Copy these files into: {DATA_DIR}
      {', '.join(REQUIRED)}
+     (train / test / RUL for each of {', '.join(SUBSETS)})
 """
 
 
@@ -83,7 +94,7 @@ def extract_needed(zip_path, data_dir):
 
 
 def check(data_dir):
-    """Compare row and engine counts with the known FD001 sizes. Warn only."""
+    """Compare row and engine counts with the known FD001-FD004 sizes. Warn only."""
     for name, (rows, engines) in EXPECTED.items():
         lines = [l for l in (data_dir / name).read_text().splitlines() if l.strip()]
         got_engines = len({l.split()[0] for l in lines}) if engines else None
