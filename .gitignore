@@ -23,3 +23,6 @@ __pycache__/
 # OS clutter
 Thumbs.db
 .DS_Store
+
+# Author's own working notes, not part of the published project
+PROJECT_NOTES.md
