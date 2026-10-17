@@ -114,9 +114,10 @@ inside the spread below, and the README says so rather than selling it.
 
 Each prediction also carries a nominal 80% interval, sized on held-out engines
 cut at an arbitrary cycle: **±45.9 cycles** on FD001 and **±49.8** on FD002. It
-covers 85% of the official answers on both subsets: wider than promised, which is
-the honest direction, because the model's mistakes are not symmetric. The width
-rests on 20 engines and 25 draws, so it is coarse by a few cycles.
+covers 85% of the official answers on FD001 and 84% on FD002: wider than
+promised, which is the honest direction, because the model's mistakes are not
+symmetric. The width rests on 20 engines and 25 draws, so it is coarse by a few
+cycles.
 
 How much of that is luck? Repeating the held-out split five times with a fresh
 random cut each time gives **41.5 ± 2.2 cycles** on FD001 and **41.0 ± 2.4** on
