@@ -102,7 +102,7 @@ question.
 | **Model input** | Turns the table into the model's exam paper: one row per cycle, 14 sensors as features, RUL as the target, 20 engines held back for testing. |
 | **Baseline model** | Can a straight line through the sensors beat the dumb guess? Turns the 14 sensors into 42 numbers, fits them on the visible engines of both subsets, and scores the hidden fifth: FD001 44.8 against 71.0, FD002 41.0 against 69.8. |
 | **Score on the real test set** | How does it do on the official quiz? One prediction per test engine, from its last recorded cycle: FD001 28.3 against 51.8, FD002 33.5 against 59.8, with the like-for-like numbers beside them. |
-| **How sure is it?** | How wide is the band around a prediction? A nominal 80% interval, sized on held-out engines cut at an arbitrary cycle: ±45.9 cycles on FD001, ±49.9 on FD002, covering 85% of the real answers on both. |
+| **How sure is it?** | How wide is the band around a prediction? A nominal 80% interval, sized on held-out engines cut at an arbitrary cycle: ±45.9 cycles on FD001, ±49.8 on FD002, covering 85% and 84% of the real answers. |
 | **Where the model fails** | Which mistakes does a single number hide? Figure 3 plots guess against truth and error against truth, so the mid-life optimism is visible. |
 | **How stable is that number?** | Is the score one lucky draw? Five folds, five repeats, a fresh random cut each time: 41.5 ± 2.2 cycles on FD001, 41.0 ± 2.4 on FD002, and the error split by how much life is left. |
 | **What to do with the number** | A life estimate is only useful if it changes what someone does: the pessimistic end of the interval becomes GROUND, INSPECT, PLAN or MONITOR, and the 259 FD002 test engines are counted into those bands. |
@@ -186,9 +186,9 @@ the spread. The quiz is a single draw of engines; the random-cut test never
 touches it.
 
 **How sure is it?** A single number hides how much to trust it, so each prediction
-carries a band: a nominal 80% interval, ±45.9 cycles on FD001 and ±49.9 on FD002,
+carries a band: a nominal 80% interval, ±45.9 cycles on FD001 and ±49.8 on FD002,
 sized from engines cut at an arbitrary cycle rather than from the answers.
-Measured on the real answers it covers 85% on both — wider than promised, which is
+Measured on the real answers it covers 85% on FD001 and 84% on FD002 — wider than promised, which is
 the safe direction, because the model's mistakes are lopsided rather than spread
 evenly. The width rests on 20 engines and 25 draws, so it is coarse by a few
 cycles.

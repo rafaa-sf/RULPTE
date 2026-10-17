@@ -9,8 +9,8 @@ Newest first. One entry per version.
   trailing mean, and the per-condition normalisation is fitted on the training
   engines only, never on the held-out ones.
 - Every number moved, because the old ones were optimistic. FD001 test 35.6 →
-  28.3 cycles, FD002 35.0 → 33.5; intervals ±45.9 / ±49.9 with 85% coverage on
-  both; cross-validation 41.5 ± 2.2 / 41.0 ± 2.4.
+  28.3 cycles, FD002 35.0 → 33.5; intervals ±45.9 / ±49.8 covering 85% and 84%;
+  cross-validation 41.5 ± 2.2 / 41.0 ± 2.4.
 - The honesty of the middle: the 42 features buy only about one cycle over the 14
   raw sensors (38.6 against 39.6 random-cut), and the model's optimism now runs
   from +2 near failure to about +30 in mid-life, turning negative past 140.
@@ -22,7 +22,7 @@ Newest first. One entry per version.
   counted into those four bands.
 - `predict.py` is the tool: `train` writes a 9 kB `model.npz`, `predict` answers
   for any C-MAPSS file, `score` reproduces the published numbers.
-- Seven pytest checks keep the tool and the notebook in agreement, and CI now
+- Four pytest checks keep the tool and the notebook in agreement, and CI now
   runs both `run.py --check` and `run.py --test` on every push.
 
 ## 1.3 — 2026-10-17 — How stable, and how it compares

@@ -113,7 +113,7 @@ condition the test set poses, and never on the test score itself: 38.6 against
 inside the spread below, and the README says so rather than selling it.
 
 Each prediction also carries a nominal 80% interval, sized on held-out engines
-cut at an arbitrary cycle: **±45.9 cycles** on FD001 and **±49.9** on FD002. It
+cut at an arbitrary cycle: **±45.9 cycles** on FD001 and **±49.8** on FD002. It
 covers 85% of the official answers on both subsets: wider than promised, which is
 the honest direction, because the model's mistakes are not symmetric. The width
 rests on 20 engines and 25 draws, so it is coarse by a few cycles.
@@ -164,7 +164,7 @@ fleet needs its own maintenance-interval and dispatch-reliability rules.
 `model.npz` is a build artefact (about 9 kB, not committed) and
 `python predict.py train` recreates it.
 
-`python run.py --test` runs the test suite: seven checks that the tool
+`python run.py --test` trains the model and runs the test suite: four checks that the tool
 reproduces the notebook's 28.3 and 33.5 and that the four bands map to the four
 actions. Continuous integration runs both that and `--check` on every push.
 

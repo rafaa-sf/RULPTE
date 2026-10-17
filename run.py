@@ -25,7 +25,8 @@ DATA_FILES = tuple(f"{kind}_{s}.txt" for s in ("FD001", "FD002", "FD003", "FD004
 MIN_PYTHON = (3, 12)
 EXPECTED = ("FD001 test RMSE: 28.3 cycles", "FD001 held-out RMSE: 44.8 cycles",
             "FD002 test RMSE: 33.5 cycles", "FD002 held-out RMSE: 41.0 cycles",
-            "FD001 80% interval: ±45.9 cycles", "FD002 coverage on the test engines: 85%",
+            "FD001 80% interval: ±45.9 cycles", "FD002 80% interval: ±49.8 cycles",
+            "FD002 coverage on the test engines: 84%",
             "FD001 repeated grouped CV: 41.5 ± 2.2 cycles",
             "FD002 repeated grouped CV: 41.0 ± 2.4 cycles")
 
@@ -130,6 +131,8 @@ def main():
         return
 
     if args.test:
+        step("Training the saved model")
+        run([python, "predict.py", "train"], args.dry_run)
         step("Running the tests")
         # no:cacheprovider keeps pytest from writing .pytest_cache, which some
         # locked-down machines refuse

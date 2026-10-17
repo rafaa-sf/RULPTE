@@ -42,9 +42,21 @@ def fd001():
     return predict.fit("FD001")
 
 
+@pytest.fixture(scope="module")
+def fd002():
+    return predict.fit("FD002")
+
+
 def test_fd001_reproduces_notebook(fd001):
     assert fd001["rmse"] == pytest.approx(28.3, abs=0.2)
     assert fd001["coverage"] == pytest.approx(0.85, abs=0.02)
+
+
+def test_fd002_reproduces_notebook(fd002):
+    """The six-condition subset is where the tool and the notebook drift apart unseen."""
+    assert fd002["rmse"] == pytest.approx(33.5, abs=0.2)
+    assert fd002["half"] == pytest.approx(49.8, abs=0.3)
+    assert fd002["coverage"] == pytest.approx(0.84, abs=0.02)
 
 
 def test_npz_round_trip_matches_memory(fd001, tmp_path, capsys, monkeypatch):
