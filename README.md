@@ -31,8 +31,8 @@ This is the data-and-plots milestone. A baseline RUL model comes next.
 ## 1. Get the code
 
 ```bash
-git clone https://github.com/YOUR-USER/rulpte.git
-cd rulpte
+git clone https://github.com/rafaa-sf/RULPTE.git
+cd RULPTE
 ```
 
 ## 2. Create a virtual environment
