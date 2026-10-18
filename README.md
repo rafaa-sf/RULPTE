@@ -133,9 +133,10 @@ sequence model, no recurrent network. Sequence models trained on whole windows
 report much lower errors on the same data — an attention-LSTM published by
 [Dida et al., IJPHM 2025](https://doi.org/10.36001/ijphm.2025.v16i2.4274)
 reaches RMSE 12.33 on FD001 and 11.76 on FD003, against this project's 28.3 on
-FD001. That gap is the price of keeping the model readable in ten lines of
-numpy; it is not a claim of parity. Published numbers also differ in RUL
-capping and clipping, so compare magnitudes, not decimals.
+FD001 (its Table 3, where the next best entries sit at 12.40 and 12.56). That gap
+is the price of keeping the model readable in ten lines of numpy; it is not a
+claim of parity. Published numbers also differ in RUL capping and clipping, so
+compare magnitudes, not decimals.
 
 ### Use it on an engine you have not seen
 
