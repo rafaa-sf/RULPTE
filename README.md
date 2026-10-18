@@ -180,8 +180,9 @@ actions. Continuous integration runs both that and `--check` on every push.
 - Git, to clone the repository
 - A notebook viewer: **Jupyter Notebook**, installed in step 3. No VS Code, no
   PyCharm, no account.
-- About 6 MB of disk for the dataset once unpacked (the download itself is a
-  ~15 MB archive that is deleted afterwards), and it is not committed
+- About 43 MB of disk for the four subsets once unpacked (265,963 rows; the
+  download itself is a ~12 MB archive that is deleted afterwards), and it is
+  not committed
 
 ## 1. Get the code
 
@@ -345,6 +346,8 @@ without any editor.
 
 ```
 run.py            one command: set up the environment, fetch data, open the notebook
+predict.py        the model as a command: train, predict, score
+tests/            pytest checks that predict.py matches the notebook
 rul_prediction.ipynb      the notebook: load, check, label, plot, fit, score
 download_data.py  fetches the NASA archive into data/
 requirements.txt  pinned dependencies
@@ -377,7 +380,7 @@ Windows while the module is present.
 **`ModuleNotFoundError: No module named 'pandas'`** — the notebook is running
 on an interpreter that is not your virtual environment. In the notebook run
 `import sys; print(sys.executable)`; the path must end in `.venv`. Pick that
-kernel, or `pip install pandas numpy matplotlib` in the active environment.
+kernel, or `pip install -r requirements.txt` in the active environment.
 
 **The browser does not open** — copy the URL with the token from the terminal
 into the browser by hand. If the port is taken, run

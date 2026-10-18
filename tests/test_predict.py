@@ -1,5 +1,6 @@
 """Drift guards: predict.py must keep reproducing the notebook and survive its own npz."""
 
+import json
 import os
 import re
 import shutil
@@ -91,3 +92,19 @@ def test_action_bands_come_from_the_thresholds():
     for probe in [-1.0] + [b + d for b in BANDS for d in (-0.5, 0.15)]:
         expected = ACTIONS[sum(probe > b for b in BANDS)]  # one band up per threshold crossed
         assert predict.action(probe) == expected
+
+def test_notebook_code_cells_compile():
+    """A markdown cell saved as code stops Run All; this catches it before a push."""
+    notebook = Path(__file__).resolve().parents[1] / "rul_prediction.ipynb"
+    cells = json.loads(notebook.read_text(encoding="utf-8"))["cells"]
+    for index, cell in enumerate(cells):
+        if cell["cell_type"] != "code":
+            continue
+        source = "".join(cell["source"])
+        try:
+            compile(source, f"cell {index}", "exec")
+        except SyntaxError as error:
+            raise AssertionError(
+                f"notebook cell {index} is code but does not compile: "
+                f"line {error.lineno}: {error.msg}"
+            ) from error

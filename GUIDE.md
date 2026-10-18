@@ -33,8 +33,6 @@ That guess has a name: **RUL**, short for *Remaining Useful Life*.
 | **RMSE** | Root Mean Squared Error. The typical size of a mistake, in cycles. RMSE 20 means "off by about 20 flights". Lower is better. |
 | **Leakage** | Cheating by accident: letting the model see the answer, or the future. It makes results look great and be wrong. |
 
----
-
 ## 3. Where everything lives
 
 ```
@@ -42,11 +40,15 @@ RULPTE/
 ├── README.md           how to install and run, step by step
 ├── GUIDE.md            this file: what everything does and why
 ├── history.md          what changed in each version
-├── rul_prediction.ipynb        the notebook: the whole analysis, read top to bottom
+├── rul_prediction.ipynb   the notebook: the whole analysis, read top to bottom
+├── run.py              one command: set up the environment, fetch data, open the notebook
+├── predict.py          the model as a command: train, predict, score
 ├── download_data.py    fetches the NASA files into data/
-├── requirements.txt    the pinned Python libraries the notebook needs
+├── requirements.txt    the pinned Python libraries, including scikit-learn
 ├── LICENSE             MIT, so anyone may reuse this
 ├── figures/            one plot, shown at the top of the README
+├── tests/              pytest checks that predict.py matches the notebook
+├── .github/workflows/  continuous integration: runs run.py --check and --test
 └── data/               the NASA files (downloaded, not stored in git)
     ├── train_FD00*.txt   engines run to failure, so we know the answers
     ├── test_FD00*.txt    engines stopped early, the quiz
@@ -54,8 +56,9 @@ RULPTE/
     └── readme.txt        NASA's own description of the files (not fetched by the script)
 ```
 
-Why the data is not in git: it is 5.5 MB of NASA's work, downloaded in one
-command, and storing it twice would only bloat the repository.
+Why the data is not in git: it is about 43 MB of NASA's work (265,963 rows
+across the four subsets), downloaded in one command, and storing it twice would
+only bloat the repository.
 
 ---
 
@@ -222,6 +225,25 @@ nearly zero for a dying engine, peaks near +30 with 40 to 80 cycles left, and
 turns negative beyond about 140, reaching −56 for the longest-lived engines. That
 is why the third figure shows the error, not just the score. A model you cannot
 see the mistakes of is a model you cannot improve.
+
+---
+
+## 8. What RMSE means, with a picture in your head
+
+Five engines, five guesses. The model says 40, 10, 30, 5 and 60 flights remain;
+the truth is 30, 30, 25, 10 and 55. The mistakes are therefore +10, -20, +5, -5
+and +5. Square each one (so that a minus sign cannot cancel a plus), average the
+five squares, and take the square root: about 10 flights. That single number is
+the RMSE.
+
+Squaring is what makes two mistakes of 20 twice as bad as one mistake of 20.
+Taking the square root afterwards puts the answer back into flights, so you can
+compare it with a lifespan instead of a squared lifespan.
+
+On this project RMSE is always in flights. 28.3 on FD001 means "typically out by
+about 28 flights"; 51.8 is what you get by answering with the fleet average every
+time, which is the number to beat. The ±band in figure 3 is one RMSE, so it holds
+roughly two thirds of the points when the errors behave themselves.
 
 ---
 

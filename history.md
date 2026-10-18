@@ -2,6 +2,22 @@
 
 Newest first. One entry per version.
 
+## 1.5.3 - 2026-10-18 - Make the notebook run again
+
+- A markdown heading ("What to do with the number") had been saved as a code
+  cell, so Run All stopped with a SyntaxError and the policy cell and the
+  Conclusions never ran. It is a markdown cell again.
+- The test suite now compiles every code cell of the notebook, so this break is
+  caught before a push instead of after one.
+- The dataset size is stated correctly: about 43 MB and 265,963 rows across the
+  four subsets, not 6 MB.
+- The pandas troubleshooting tip now says `pip install -r requirements.txt`,
+  which also brings scikit-learn.
+- Both project layouts list `predict.py`, `tests/`, `run.py` and the CI workflow.
+- GUIDE regains its missing section 8 on RMSE, numbering runs 1 to 10, and the
+  planned list no longer promises a deep-learning comparison that is out of
+  scope.
+
 ## 1.5.2 — 2026-10-18 — Fix three labels and one omission
 
 - Figure 2's title claimed the sensors "drift steadily toward failure"; it now
@@ -149,4 +165,5 @@ Nothing below has been started; this is a list of candidates, not a commitment.
 
 - A correction for the mid-life optimism, scored by the same cross-validation.
 - Monitoring and drift: what to check before trusting the model on a new fleet.
-- A deep-learning comparison on FD002 and FD004, where the baseline is weakest.
+- A per-flight prediction with calibrated intervals, instead of one number per
+  engine at its last flight.
